@@ -1,0 +1,8 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+rule "test rule engine 2"
+    when
+    then
+        System.out.println("RULE 2 ENGINE WORKING! (empty \"when\" part)");
+end

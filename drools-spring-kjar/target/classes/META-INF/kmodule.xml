@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
+    <!-- packages ==> Comma separated list of resource packages to be included in this kBase. -->
+	<kbase name="myKBase" packages="drools.spring.rules, drools.spring.security" eventProcessingMode="stream">
+		<ksession name="myKSession" default="true"/>
+	</kbase>
+</kmodule>
