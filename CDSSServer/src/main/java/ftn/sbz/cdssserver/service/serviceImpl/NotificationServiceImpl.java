@@ -1,7 +1,7 @@
-package fda.sbz.cdssserver.service.serviceImpl;
+package ftn.sbz.cdssserver.service.serviceImpl;
 
-import fda.sbz.cdssserver.model.AlarmNotification;
-import fda.sbz.cdssserver.service.NotificationService;
+import ftn.sbz.cdssserver.model.AlarmNotification;
+import ftn.sbz.cdssserver.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

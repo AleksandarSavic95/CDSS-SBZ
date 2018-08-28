@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver;
+package ftn.sbz.cdssserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver.security;
+package ftn.sbz.cdssserver.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -6,7 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import fda.sbz.cdssserver.service.UserService;
+import ftn.sbz.cdssserver.service.UserService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

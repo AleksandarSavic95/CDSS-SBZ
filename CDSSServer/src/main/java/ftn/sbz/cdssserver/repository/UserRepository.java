@@ -1,7 +1,7 @@
-package fda.sbz.cdssserver.repository;
+package ftn.sbz.cdssserver.repository;
 
-import fda.sbz.cdssserver.model.Role;
-import fda.sbz.cdssserver.model.User;
+import ftn.sbz.cdssserver.model.Role;
+import ftn.sbz.cdssserver.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;

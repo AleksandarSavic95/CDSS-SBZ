@@ -1,6 +1,6 @@
-package fda.sbz.cdssserver.security;
+package ftn.sbz.cdssserver.security;
 
-import fda.sbz.cdssserver.service.UserService;
+import ftn.sbz.cdssserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

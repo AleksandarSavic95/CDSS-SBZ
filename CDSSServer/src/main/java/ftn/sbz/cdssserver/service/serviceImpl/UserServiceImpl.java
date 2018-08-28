@@ -1,10 +1,10 @@
-package fda.sbz.cdssserver.service.serviceImpl;
+package ftn.sbz.cdssserver.service.serviceImpl;
 
-import fda.sbz.cdssserver.model.Role;
-import fda.sbz.cdssserver.model.User;
-import fda.sbz.cdssserver.repository.UserRepository;
-import fda.sbz.cdssserver.security.SecurityUtils;
-import fda.sbz.cdssserver.service.UserService;
+import ftn.sbz.cdssserver.model.Role;
+import ftn.sbz.cdssserver.model.User;
+import ftn.sbz.cdssserver.repository.UserRepository;
+import ftn.sbz.cdssserver.security.SecurityUtils;
+import ftn.sbz.cdssserver.service.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Service

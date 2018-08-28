@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver;
+package ftn.sbz.cdssserver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

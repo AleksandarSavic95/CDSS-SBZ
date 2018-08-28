@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver.security;
+package ftn.sbz.cdssserver.security;
 
 
 import io.jsonwebtoken.Claims;

@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver.model;
+package ftn.sbz.cdssserver.model;
 
 //@Document(collection = "user")
 public class User {

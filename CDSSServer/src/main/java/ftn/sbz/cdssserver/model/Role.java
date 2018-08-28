@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver.model;
+package ftn.sbz.cdssserver.model;
 
 public enum Role {
     ADMIN,

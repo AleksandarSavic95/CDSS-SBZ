@@ -1,8 +1,8 @@
-package fda.sbz.cdssserver.controller;
+package ftn.sbz.cdssserver.controller;
 
-import fda.sbz.cdssserver.model.User;
-import fda.sbz.cdssserver.security.TokenUtils;
-import fda.sbz.cdssserver.service.UserService;
+import ftn.sbz.cdssserver.model.User;
+import ftn.sbz.cdssserver.security.TokenUtils;
+import ftn.sbz.cdssserver.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package fda.sbz.cdssserver.service;
+package ftn.sbz.cdssserver.service;
 
 import org.springframework.stereotype.Service;
 

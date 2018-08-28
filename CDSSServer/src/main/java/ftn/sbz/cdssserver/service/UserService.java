@@ -1,9 +1,7 @@
-package fda.sbz.cdssserver.service;
+package ftn.sbz.cdssserver.service;
 
-import fda.sbz.cdssserver.model.User;
+import ftn.sbz.cdssserver.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.Map;
 
 
 public interface UserService extends UserDetailsService {
