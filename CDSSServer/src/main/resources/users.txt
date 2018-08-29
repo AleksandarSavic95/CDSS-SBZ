@@ -1,4 +1,6 @@
-# password: admin1
+# password: admin
+admin,$2a$10$b.T5EMJqJM/Y2XqbcBqs9.a.U6LFjfoWC/9iUhNd7iteaTC4.ney2,ADMIN
+# password: admin1   $2a$10$YaZ43NIFWAajEaKwXzQmfeo6SfnrzQ7dYdZEWMhl/DQLKMbQhwv8m
 admin1,$2a$10$YaZ43NIFWAajEaKwXzQmfeo6SfnrzQ7dYdZEWMhl/DQLKMbQhwv8m,ADMIN
 # password: admin2
 admin2,$2a$10$9xtfRguR0GEoPWm/VTb2ZeHoV3pHVjIIfQtSXcuQUHAfKZrZYhE1.,ADMIN

@@ -29,12 +29,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.requiresChannel().anyRequest();
-        http.csrf().disable()
+        http.requiresChannel().anyRequest(); // ???
+        http.headers().frameOptions().disable(); // h2 db web-console
+        http.csrf().disable ()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/login", "/api/register", "/api/reports").permitAll();
+//        http.formLogin().disable();
+//        http.httpBasic().disable();
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
     }
 
@@ -61,4 +64,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+//    To enable PLAIN-TEXT passwords, user this instead of the BCrypt 'passwordEncoder' bean
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new PasswordEncoder() {
+//            @Override
+//            public String encode(CharSequence charSequence) {
+//                return charSequence.toString();
+//            }
+//
+//            @Override
+//            public boolean matches(CharSequence charSequence, String s) {
+//                return charSequence.toString().equals(s);
+//            }
+//        };
+//    }
 }

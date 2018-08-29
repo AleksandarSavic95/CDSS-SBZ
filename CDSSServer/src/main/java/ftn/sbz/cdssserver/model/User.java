@@ -1,31 +1,67 @@
 package ftn.sbz.cdssserver.model;
 
-//@Document(collection = "user")
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+
+@Entity
+@Table(name = "user_table")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
-    //@Id
-//    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
 
-    //@Indexed(direction = IndexDirection.ASCENDING)
-    private String username;
+    @NotEmpty
+    @Column(nullable = false)
+    protected String name;
 
-    private String password;
-    private Role role;
+    @NotEmpty
+    @Column(nullable = false, unique = true)
+    protected String username;
 
-    public User() {
-    }
+//    @JsonIgnore
+    @NotEmpty
+    @Column(nullable = false)
+    protected String password;
 
-    public User(String username, String password) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    protected Role role;
+
+
+    public User() {}
+
+    public User(@NotEmpty String name, @NotEmpty String username, @NotEmpty String password) {
+        this.name = name;
         this.username = username;
         this.password = password;
     }
 
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getUsername() {
         return username;
@@ -43,11 +79,12 @@ public class User {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
+    @Override
+    public String toString() {
+        return "User {" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", role=" + role + "}\n";
     }
 }

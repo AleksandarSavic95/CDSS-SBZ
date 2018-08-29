@@ -30,7 +30,7 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(@RequestBody User user) {
         String username = user.getUsername();
-        System.out.println("LOGIN TRY " + user.getUsername());
+        System.out.println("LOGIN TRY " + username + " pass: " + user.getPassword());
 
         try {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, user.getPassword());

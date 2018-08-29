@@ -31,7 +31,7 @@ public class UserRepository {
                 if (!line.startsWith("#")) {
                     String[] parsedLine = parseUsersLine(line);
 
-                    User user = new User(parsedLine[0], parsedLine[1]);
+                    User user = new User(parsedLine[0], parsedLine[0], parsedLine[1]);
                     user.setRole(Role.valueOf(parsedLine[2]));
 
                     usersMap.put(parsedLine[0], user);
@@ -40,7 +40,7 @@ public class UserRepository {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("\nReading users finished!");
+        System.out.println("\nReading users finished! # = " + usersMap.size());
     }
 
     public User save(User user) {

@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             System.out.println("User already exists");
         }
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.DOCTOR);
         return userRepository.save(user);
     }
@@ -65,4 +65,13 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.findByUsername(username);
     }
+
+//    use this to ENCODE passwords (for testing)
+//    public static void main(String[] args) {
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        System.out.println(encoder.encode("admin"));
+//        System.out.println(encoder.encode("drago"));
+//        System.out.println(encoder.encode("marko"));
+//        System.out.println(encoder.encode("obrad"));
+//    }
 }
