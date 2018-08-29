@@ -1,8 +1,9 @@
-INSERT INTO user_table (id, role, name, username, password) VALUES (1, 'ADMIN', 'Admin Admin', '$2a$10$b.T5EMJqJM/Y2XqbcBqs9.a.U6LFjfoWC/9iUhNd7iteaTC4.ney2', 'admin');
-
-INSERT INTO user_table (id, role, name, username, password) VALUES (2, 'DOCTOR', 'Drago Dragic', '$2a$10$hEJkFxoVXx7oifMMFOszJOhu3SFrX0fHTW3avkHt1xXE3W14a2mI2', '123');
-INSERT INTO user_table (id, role, name, username, password) VALUES (3, 'DOCTOR', 'Marko Markovic', '$2a$10$2ror.SFdV8UpthRbqY94uOmR4S7k.aC29c7TSton9cazGGjaPRCbS', '123');
-INSERT INTO user_table (id, role, name, username, password) VALUES (4, 'DOCTOR', 'Obrad Obradovic', '$2a$10$wgHZGCrCIquZirCFWWVBautk/Snw3Wf/9Mgitx9SsfXHLyOFwRbZi', '123');
+-- admin's password is "admin" (no quotes)
+INSERT INTO user_table (id, role, name, username, password) VALUES (1, 'ADMIN', 'Admin Admin', 'admin', '$2a$10$b.T5EMJqJM/Y2XqbcBqs9.a.U6LFjfoWC/9iUhNd7iteaTC4.ney2');
+-- doctors' passwords are all "123" (no quotes)
+INSERT INTO user_table (id, role, name, username, password) VALUES (2, 'DOCTOR', 'Drago Dragic', 'drago', '$2a$10$7MhEaZ7h94V5yGznzE2jq.fKk3l9x/q6S6XJs1glPNJI5fwDQ/CDq');
+INSERT INTO user_table (id, role, name, username, password) VALUES (3, 'DOCTOR', 'Marko Markovic', 'marko', '$2a$10$7MhEaZ7h94V5yGznzE2jq.fKk3l9x/q6S6XJs1glPNJI5fwDQ/CDq');
+INSERT INTO user_table (id, role, name, username, password) VALUES (4, 'DOCTOR', 'Obrad Obradovic', 'obrad', '$2a$10$7MhEaZ7h94V5yGznzE2jq.fKk3l9x/q6S6XJs1glPNJI5fwDQ/CDq');
 INSERT INTO doctor (id) VALUES (2);
 INSERT INTO doctor (id) VALUES (3);
 INSERT INTO doctor (id) VALUES (4);

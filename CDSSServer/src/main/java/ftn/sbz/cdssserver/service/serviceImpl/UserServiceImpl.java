@@ -28,18 +28,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    @Override
     public User register(User user) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             System.out.println("User already exists");
+            return null;
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.DOCTOR);
         return userRepository.save(user);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
@@ -66,12 +67,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username);
     }
 
-//    use this to ENCODE passwords (for testing)
+//    // Use this to ENCODE passwords (for testing)
 //    public static void main(String[] args) {
 //        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        System.out.println(encoder.encode("admin"));
-//        System.out.println(encoder.encode("drago"));
-//        System.out.println(encoder.encode("marko"));
-//        System.out.println(encoder.encode("obrad"));
+//        System.out.println(encoder.encode("123"));
 //    }
 }
