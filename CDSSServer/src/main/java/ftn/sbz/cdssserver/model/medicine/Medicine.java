@@ -15,7 +15,7 @@ public class Medicine {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "medicine_ingredient",
             joinColumns = @JoinColumn(name = "medicine_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id", referencedColumnName = "id"))
