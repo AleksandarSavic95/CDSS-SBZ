@@ -1,7 +1,7 @@
 package ftn.sbz.cdssserver.controller;
 
-import ftn.sbz.cdssserver.model.medicine.Medicine;
-import ftn.sbz.cdssserver.service.MedicineService;
+import ftn.sbz.cdssserver.model.medicine.Ingredient;
+import ftn.sbz.cdssserver.service.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,35 +14,35 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/medicines")
-public class MedicineController {
+@RequestMapping("/api/ingredients")
+public class IngredientController {
 
-    private final MedicineService medicineService;
+    private final IngredientService ingredientService;
 
     @Autowired
-    public MedicineController(MedicineService medicineService) {
-        this.medicineService = medicineService;
+    public IngredientController(IngredientService ingredientService) {
+        this.ingredientService = ingredientService;
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<java.util.List<Medicine>> findAll() {
-        return new ResponseEntity<>(medicineService.findAll(), HttpStatus.OK);
+    public ResponseEntity findAll() {
+        return new ResponseEntity<>(ingredientService.findAll(), HttpStatus.OK);
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/page")
-    public ResponseEntity<Page<Medicine>> findAll(@RequestParam Integer number,
+    public ResponseEntity<Page<Ingredient>> findAll(@RequestParam Integer number,
                                                   @RequestParam Integer size) {
         PageRequest pageRequest = PageRequest.of(number, size, Sort.by(Sort.Direction.ASC, "name"));
-        Page<Medicine> medicinePage = medicineService.findAll(pageRequest);
+        Page<Ingredient> medicinePage = ingredientService.findAll(pageRequest);
         return new ResponseEntity<>(medicinePage, HttpStatus.OK);
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable long id) {
-        Medicine found = medicineService.findById(id);
+        Ingredient found = ingredientService.findById(id);
         if (found == null)
             return new ResponseEntity<>("not found!", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(found, HttpStatus.OK);
@@ -50,8 +50,8 @@ public class MedicineController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity create(@RequestBody @Valid Medicine medicine) {
-        final Medicine created = medicineService.create(medicine);
+    public ResponseEntity create(@RequestBody @Valid Ingredient ingredient) {
+        final Ingredient created = ingredientService.create(ingredient);
         if (created == null)
             return new ResponseEntity<>("name taken!", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(created.getId(), HttpStatus.CREATED);
@@ -59,10 +59,10 @@ public class MedicineController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable long id, @RequestBody Medicine medicine) {
-        Medicine updated = medicineService.update(id, medicine);
+    public ResponseEntity update(@PathVariable long id, @RequestBody Ingredient ingredient) {
+        Ingredient updated = ingredientService.update(id, ingredient);
         if (updated == null) {
-            return new ResponseEntity<>("non-existing, name taken or bad ingredients!",
+            return new ResponseEntity<>("non-existing or name taken!",
                     HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(updated, HttpStatus.OK);
@@ -71,8 +71,7 @@ public class MedicineController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable long id) {
-        medicineService.delete(id);
+        ingredientService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
-

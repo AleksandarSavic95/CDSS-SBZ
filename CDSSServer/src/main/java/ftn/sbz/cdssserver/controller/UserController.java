@@ -51,7 +51,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity createAdmin(@RequestBody @Valid CreateUserDto userDto) {
+    public ResponseEntity createDoctor(@RequestBody @Valid CreateUserDto userDto) {
         final User created = userService.register(userDto.createDoctor());
 
         if (created == null) {
