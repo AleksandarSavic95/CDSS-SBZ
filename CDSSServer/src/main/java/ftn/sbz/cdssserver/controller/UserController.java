@@ -4,7 +4,10 @@ import ftn.sbz.cdssserver.model.User;
 import ftn.sbz.cdssserver.model.dto.CreateUserDto;
 import ftn.sbz.cdssserver.model.dto.LoginDto;
 import ftn.sbz.cdssserver.security.TokenUtils;
+import ftn.sbz.cdssserver.service.KieSessionService;
 import ftn.sbz.cdssserver.service.UserService;
+import org.kie.api.runtime.KieContainer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,12 +27,16 @@ public class UserController {
     private AuthenticationManager authenticationManager;
     private UserService userService;
     private TokenUtils tokenUtils;
+    private KieContainer kieContainer;
+    private KieSessionService kieSessionService;
 
-
-    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenUtils tokenUtils) {
+    @Autowired
+    public UserController(AuthenticationManager authenticationManager, UserService userService, TokenUtils tokenUtils, KieContainer kieContainer, KieSessionService kieSessionService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.tokenUtils = tokenUtils;
+        this.kieContainer = kieContainer;
+        this.kieSessionService = kieSessionService;
     }
 
     @PostMapping(value = "/login")
@@ -41,6 +48,9 @@ public class UserController {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, user.getPassword());
             Authentication authentication = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // KieSessionService.createSession(username, kieContainer); // F
+            kieSessionService.createSession(username, kieContainer); // A
 
             UserDetails details = userService.loadUserByUsername(username);
             return new ResponseEntity<>(tokenUtils.generateToken(details), HttpStatus.OK);
