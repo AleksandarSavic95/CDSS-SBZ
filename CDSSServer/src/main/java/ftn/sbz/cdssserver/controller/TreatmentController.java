@@ -30,8 +30,8 @@ public class TreatmentController {
     public ResponseEntity<Page<Treatment>> findAll(@RequestParam Integer number,
                                                  @RequestParam Integer size) {
         PageRequest pageRequest = PageRequest.of(number, size, Sort.by(Sort.Direction.DESC, "timestamp"));
-        Page<Treatment> medicinePage = treatmentService.findAll(pageRequest);
-        return new ResponseEntity<>(medicinePage, HttpStatus.OK);
+        Page<Treatment> treatmentsPage = treatmentService.findAll(pageRequest);
+        return new ResponseEntity<>(treatmentsPage, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")

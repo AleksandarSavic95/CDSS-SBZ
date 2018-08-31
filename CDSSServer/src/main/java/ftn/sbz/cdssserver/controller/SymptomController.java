@@ -37,8 +37,8 @@ public class SymptomController {
     public ResponseEntity<Page<Symptom>> findAll(@RequestParam Integer number,
                                                   @RequestParam Integer size) {
         PageRequest pageRequest = PageRequest.of(number, size, Sort.by(Sort.Direction.ASC, "name"));
-        Page<Symptom> medicinePage = symptomService.findAll(pageRequest);
-        return new ResponseEntity<>(medicinePage, HttpStatus.OK);
+        Page<Symptom> symptomsPage = symptomService.findAll(pageRequest);
+        return new ResponseEntity<>(symptomsPage, HttpStatus.OK);
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -35,8 +35,8 @@ public class IngredientController {
     public ResponseEntity<Page<Ingredient>> findAll(@RequestParam Integer number,
                                                   @RequestParam Integer size) {
         PageRequest pageRequest = PageRequest.of(number, size, Sort.by(Sort.Direction.ASC, "name"));
-        Page<Ingredient> medicinePage = ingredientService.findAll(pageRequest);
-        return new ResponseEntity<>(medicinePage, HttpStatus.OK);
+        Page<Ingredient> ingredientsPage = ingredientService.findAll(pageRequest);
+        return new ResponseEntity<>(ingredientsPage, HttpStatus.OK);
     }
 
     @PreAuthorize("isAuthenticated()")
