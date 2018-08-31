@@ -100,6 +100,11 @@ public class PatientController {
     }
     // A A A A A A A A A A A A A A A A A A A A
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/rules")
+    public ResponseEntity sessionFromRuleService() {
+        return new ResponseEntity<>(ruleService.getRulesAmount(), HttpStatus.OK);
+    }
 //
 //    @PreAuthorize("hasAuthority('DOCTOR')")
 //    @PostMapping("/{id}/checkAllergies")

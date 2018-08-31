@@ -2,7 +2,7 @@
 <kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
     <!-- packages ==> Comma separated list of resource packages to be included in this kBase. -->
 	<kbase name="myKBase" packages="drools.spring.rules" eventProcessingMode="stream">
-		<ksession name="CDSS-Session" default="true"/>
+		<ksession name="UserSession" default="true"/>
 		<ksession name="MonitoringSession"/>
 		<ksession name="TestSession" clockType="pseudo"/>
 	</kbase>

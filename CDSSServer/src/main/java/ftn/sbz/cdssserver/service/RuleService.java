@@ -13,5 +13,5 @@ public interface RuleService {
 
     List<PossibleSickness> getPossibleSicknesses(long id, DiagnosisDto diagnosisDto);
 
-    Object getDoctorSession();
+    int getRulesAmount();
 }
