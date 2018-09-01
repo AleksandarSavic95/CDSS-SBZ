@@ -2,7 +2,8 @@ package ftn.sbz.cdssserver.controller;
 
 import ftn.sbz.cdssserver.model.Patient;
 import ftn.sbz.cdssserver.model.dto.DiagnosisDto;
-import ftn.sbz.cdssserver.model.dto.PatientDto;
+import ftn.sbz.cdssserver.model.medicine.Medicine;
+import ftn.sbz.cdssserver.model.rules.PossibleAllergies;
 import ftn.sbz.cdssserver.model.rules.PossibleSickness;
 import ftn.sbz.cdssserver.security.SecurityUtils;
 import ftn.sbz.cdssserver.service.KieSessionService;
@@ -10,11 +11,12 @@ import ftn.sbz.cdssserver.service.PatientService;
 import ftn.sbz.cdssserver.service.RuleService;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,35 +38,49 @@ public class PatientController {
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
-    @GetMapping("/pageable")
-    public ResponseEntity findAll(Pageable pageable) {
-        return new ResponseEntity<>(patientService.findAll(pageable), HttpStatus.OK);
+    @GetMapping("/page")
+    public ResponseEntity<Page<Patient>> findAll(@RequestParam Integer number,
+                                                  @RequestParam Integer size) {
+        PageRequest pageRequest = PageRequest.of(number, size, Sort.by(Sort.Direction.ASC, "name"));
+        Page<Patient> patientPage = patientService.findAll(pageRequest);
+        return new ResponseEntity<>(patientPage, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable long id) {
-        final Patient patient = patientService.findById(id);
-        return new ResponseEntity<>(new PatientDto(patient), HttpStatus.OK);
+        final Patient found = patientService.findById(id);
+        if (found == null)
+            return new ResponseEntity<>("not found!", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(found, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
     @GetMapping("/medicalCard") // /medicalCard?number="MCN"
-    public ResponseEntity findBySSN(@RequestParam String number) {
-        return new ResponseEntity<>(patientService.findByMedicalCardNumber(number), HttpStatus.OK);
+    public ResponseEntity findByMedicalCardNumber(@RequestParam("number") String cardNumber) {
+        final Patient found = patientService.findByMedicalCardNumber(cardNumber);
+        if (found == null)
+            return new ResponseEntity<>("not found!", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(found, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid Patient patient) {
         final Patient created = patientService.create(patient);
+        if (created == null)
+            return new ResponseEntity<>("Medical card number taken!", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(created.getId(), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable long id, @RequestBody Patient patient) {
-        return new ResponseEntity<>(patientService.update(id, patient), HttpStatus.OK);
+        Patient updated = patientService.update(id, patient);
+        if (updated == null) {
+            return new ResponseEntity<>("non-existing patient!", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
@@ -78,6 +94,9 @@ public class PatientController {
     @PostMapping("/{id}/possibleSicknesses")
     public ResponseEntity getPossibleSicknesses(@PathVariable long id, @RequestBody DiagnosisDto diagnosisDto) {
         final List<PossibleSickness> sicknesses = ruleService.getPossibleSicknesses(id, diagnosisDto);
+        if (sicknesses == null) {
+            return new ResponseEntity<>("non-existing patient!", HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(sicknesses, HttpStatus.OK);
     }
 
@@ -105,13 +124,16 @@ public class PatientController {
     public ResponseEntity sessionFromRuleService() {
         return new ResponseEntity<>(ruleService.getRulesAmount(), HttpStatus.OK);
     }
-//
-//    @PreAuthorize("hasAuthority('DOCTOR')")
-//    @PostMapping("/{id}/checkAllergies")
-//    public ResponseEntity checkAllergies(@PathVariable long id, @RequestBody List<Medicine> medicine) {
-//        final List<AllergyWarning> allergyWarnings = ruleService.checkAllergies(id, medicine);
-//        return new ResponseEntity<>(allergyWarnings, HttpStatus.OK);
-//    }
+
+    @PreAuthorize("hasAuthority('DOCTOR')")
+    @PostMapping("/{id}/checkAllergies")
+    public ResponseEntity checkAllergies(@PathVariable long id, @RequestBody List<Medicine> medicine) {
+        final PossibleAllergies possibleAllergies = ruleService.checkAllergies(id, medicine);
+        if (possibleAllergies== null) {
+            return new ResponseEntity<>("non-existing patient!", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(possibleAllergies, HttpStatus.OK);
+    }
 //
 //    @PreAuthorize("hasAuthority('DOCTOR')")
 //    @GetMapping("/generateReports")

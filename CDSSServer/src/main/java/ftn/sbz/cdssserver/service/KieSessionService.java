@@ -10,7 +10,7 @@ import java.util.HashMap;
 @Service // A
 public class KieSessionService {
     private static HashMap<String, KieSession> sessionMap;
-    private static final String KIE_SESSION_NAME = "CDSS-Session";
+    private static final String KIE_SESSION_NAME = "UserSession";
 
     static {
         sessionMap = new HashMap<>();

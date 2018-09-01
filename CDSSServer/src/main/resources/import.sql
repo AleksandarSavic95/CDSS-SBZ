@@ -110,7 +110,6 @@ INSERT INTO ingredient (id, name) VALUES (3, 'ascorbic acid');
 INSERT INTO medicine (id, name, type) VALUES (1, 'ibuprofen', 'ANALGETIC');
 INSERT INTO medicine (id, name, type) VALUES (2, 'paracetamol', 'ANTIBIOTIC');
 -- --
-INSERT INTO medicine_ingredient (medicine_id, ingredient_id) VALUES (1, 1);
 INSERT INTO medicine_ingredient (medicine_id, ingredient_id) VALUES (1, 2);
 INSERT INTO medicine_ingredient (medicine_id, ingredient_id) VALUES (1, 3);
 
@@ -125,8 +124,11 @@ INSERT INTO patient_sickness (patient_id, sickness_id) VALUES (1, 10);
 
 INSERT INTO patient_sickness (patient_id, sickness_id) VALUES (2, 3);
 -- --
+INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (1, 1);
+INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (1, 2);
 INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (2, 2);
 -- --
+INSERT INTO allergen_ingredient (patient_id, ingredient_id) VALUES (2, 1);
 INSERT INTO allergen_ingredient (patient_id, ingredient_id) VALUES (3, 1);
 -- --
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (1, '2018-06-14 19:44:52', 5, 2, 1);

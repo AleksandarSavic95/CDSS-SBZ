@@ -1,0 +1,39 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.model.Patient;
+import ftn.sbz.cdssserver.model.medicine.Medicine;
+import ftn.sbz.cdssserver.model.medicine.Ingredient;
+import ftn.sbz.cdssserver.model.rules.PossibleAllergies;
+
+import java.util.List;
+
+
+query checkAllergies(Patient p)
+    $medAllergens: List() from accumulate (
+        $meds: Medicine(this memberOf p.getAllergensMedicines()),
+        collectList($meds)
+    )
+    $ingAllergens: List() from accumulate (
+        $ings: Ingredient(this memberOf p.getAllergensIngredients()),
+        collectList($ings)
+    )
+    // eval($medAllergy.size() + $ingrAllergy.size() > 0)
+end
+
+rule "check allergies"
+    agenda-group "allergies"
+    when
+        $p: Patient($medicines: allergensMedicines, $ingredients: allergensIngredients)
+        $medAllergy: List() from accumulate (
+            $m: Medicine(this memberOf $medicines),
+            collectList($m)
+        )
+        $ingAllergy: List() from accumulate (
+            $i: Ingredient(this memberOf $ingredients),
+            collectList($i)
+        )
+        eval($medAllergy.size() + $ingAllergy.size() > 0)
+    then
+        insert(new PossibleAllergies($medAllergy, $ingAllergy));
+end

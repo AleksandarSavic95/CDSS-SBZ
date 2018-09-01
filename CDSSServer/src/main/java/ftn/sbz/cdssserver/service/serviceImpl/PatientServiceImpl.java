@@ -37,11 +37,16 @@ public class PatientServiceImpl implements PatientService {
     }
 
     public Patient create(Patient patient) {
+        if (patientRepository.findByMedicalCardNumber(patient.getMedicalCardNumber()) != null)
+            return null;
+        // TODO: check that allergens (medicines and ingredients) are in DB
         return patientRepository.save(patient);
     }
 
     public Patient update(long id, Patient patient) {
         final Patient persisted = findById(id);
+        if (persisted == null)
+            return null;
         persisted.setName(patient.getName());
 
         persisted.setSickFrom(patient.getSickFrom());
@@ -53,9 +58,11 @@ public class PatientServiceImpl implements PatientService {
 
     public void delete(long id) {
         final Patient persisted = findById(id);
-        persisted.getTreatments().forEach(t -> t.setPatient(null));
+        if (persisted != null) {
+            persisted.getTreatments().forEach(t -> t.setPatient(null));
 
-        patientRepository.delete(persisted);
+            patientRepository.delete(persisted);
+        }
     }
 
 }

@@ -40,7 +40,7 @@ public class PatientDto {
 
         this.treatments = new ArrayList<>(patient.getTreatments());
         this.treatments.forEach(t -> t.setPatient(null));
-
+        // TODO: check if ordering is already done by @OrderBy in class Treatment!
         this.treatments.sort((t1, t2) -> t1.getTimestamp().after(t2.getTimestamp()) ? -1 : 1);
     }
 
