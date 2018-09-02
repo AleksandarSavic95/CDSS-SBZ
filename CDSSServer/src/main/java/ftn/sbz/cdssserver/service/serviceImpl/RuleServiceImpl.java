@@ -11,10 +11,12 @@ import ftn.sbz.cdssserver.service.*;
 import org.kie.api.KieBase;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -37,9 +39,11 @@ public class RuleServiceImpl implements RuleService {
     // insert all sicknesses (and RuleService fact to target specific rules)
     private void initializeSession() {
         //KieSession kieSession = KieSessionService.getSession(SecurityUtils.getUsernameOfLoggedUser());// F
+        System.out.println(this.getClass().getName());
         kieSession.insert(this);
 
         final List<Sickness> sicknesses = sicknessService.findAll();
+        System.out.println("\ninserted: " + sicknesses.size() + " sicknesses!\n");
         sicknesses.forEach(kieSession::insert);
     }
 
@@ -86,6 +90,16 @@ public class RuleServiceImpl implements RuleService {
             count += p.getRules().size();
         }
         return count;
+    }
+
+    @Override
+    public Sickness findSicknessByName(String name) {
+        initializeSession();
+        QueryResults results = kieSession.getQueryResults("findSickness", name.toLowerCase());
+
+        if (results.iterator().hasNext())
+            return (Sickness) results.iterator().next().get("$found");
+        return null;
     }
 
 

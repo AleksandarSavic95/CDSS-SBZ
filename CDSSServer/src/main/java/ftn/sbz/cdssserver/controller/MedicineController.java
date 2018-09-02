@@ -40,6 +40,17 @@ public class MedicineController {
         return new ResponseEntity<>(medicinePage, HttpStatus.OK);
     }
 
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/find")
+    public ResponseEntity<Page<Medicine>> findByText(@RequestParam String text,
+                                                       @RequestParam Integer page,
+                                                       @RequestParam Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+        Page<Medicine> medicinePage = medicineService.findByText(text, pageRequest);
+        return new ResponseEntity<>(medicinePage, HttpStatus.OK);
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable long id) {

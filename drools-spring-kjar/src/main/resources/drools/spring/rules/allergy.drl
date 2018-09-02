@@ -21,6 +21,7 @@ query checkAllergies(Patient p)
     // eval($medAllergy.size() + $ingrAllergy.size() > 0)
 end
 
+// F F F F F F F F F F F F F F F F F F
 rule "check allergies"
     agenda-group "allergies"
     when
@@ -37,3 +38,4 @@ rule "check allergies"
     then
         insert(new PossibleAllergies($medAllergy, $ingAllergy));
 end
+// F F F F F F F F F F F F F F F F F F

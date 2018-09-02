@@ -1,0 +1,16 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.model.sickness.Sickness;
+import java.util.List;
+
+query findSickness(String sicknessName)
+    $found: Sickness(name.toLowerCase().equals(sicknessName))
+end
+
+query findSicknessesContaining(String text)
+    $found: List() from accumulate (
+        $s: Sickness(name.toLowerCase().contains(text)),
+        collectList($s)
+    )
+end

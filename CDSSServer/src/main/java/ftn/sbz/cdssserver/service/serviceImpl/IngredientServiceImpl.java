@@ -6,6 +6,7 @@ import ftn.sbz.cdssserver.repository.IngredientRepository;
 import ftn.sbz.cdssserver.service.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -56,5 +57,10 @@ public class IngredientServiceImpl implements IngredientService {
         final Ingredient persisted = findById(id);
         if (persisted != null)
             ingredientRepository.delete(persisted);
+    }
+
+    @Override
+    public Page<Ingredient> findByText(String text, PageRequest pageRequest) {
+        return ingredientRepository.findByNameContainingIgnoreCase(text.toLowerCase(), pageRequest);
     }
 }

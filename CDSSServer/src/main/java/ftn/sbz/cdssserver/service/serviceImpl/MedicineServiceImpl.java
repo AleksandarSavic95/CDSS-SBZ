@@ -7,6 +7,7 @@ import ftn.sbz.cdssserver.repository.MedicineRepository;
 import ftn.sbz.cdssserver.service.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -86,5 +87,10 @@ public class MedicineServiceImpl implements MedicineService {
         final Medicine persisted = findById(id);
         if (persisted != null)
             medicineRepository.delete(persisted);
+    }
+
+    @Override
+    public Page<Medicine> findByText(String text, PageRequest pageRequest) {
+        return medicineRepository.findByNameContainingIgnoreCase(text.toLowerCase(), pageRequest);
     }
 }

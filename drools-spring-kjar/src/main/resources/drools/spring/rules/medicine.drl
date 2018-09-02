@@ -1,0 +1,22 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.model.medicine.Medicine;
+import ftn.sbz.cdssserver.model.medicine.Ingredient;
+
+import java.util.List;
+
+
+query findMedicinesContaining(String text)
+    $found: List() from accumulate (
+        $m: Medicine(name.toLowerCase().contains(text)),
+        collectList($m)
+    )
+end
+
+query findIngredientsContaining(String text)
+    $found: List() from accumulate (
+        $i: Ingredient(name.toLowerCase().contains(text)),
+        collectList($i)
+    )
+end

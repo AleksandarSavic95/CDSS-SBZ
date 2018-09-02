@@ -48,6 +48,16 @@ public class IngredientController {
         return new ResponseEntity<>(found, HttpStatus.OK);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/find")
+    public ResponseEntity<Page<Ingredient>> findByText(@RequestParam String text,
+                                                    @RequestParam Integer page,
+                                                    @RequestParam Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+        Page<Ingredient> ingredientsPage = ingredientService.findByText(text, pageRequest);
+        return new ResponseEntity<>(ingredientsPage, HttpStatus.OK);
+    }
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid Ingredient ingredient) {

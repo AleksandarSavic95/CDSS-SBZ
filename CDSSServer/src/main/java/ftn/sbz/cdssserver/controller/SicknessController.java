@@ -2,6 +2,7 @@ package ftn.sbz.cdssserver.controller;
 
 import ftn.sbz.cdssserver.model.dto.SicknessDto;
 import ftn.sbz.cdssserver.model.sickness.Sickness;
+import ftn.sbz.cdssserver.service.RuleService;
 import ftn.sbz.cdssserver.service.SicknessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,12 +21,12 @@ public class SicknessController {
 
     private final SicknessService sicknessService;
 
-    // private final RuleService ruleService;
+    private final RuleService ruleService;
 
     @Autowired
-    public SicknessController(SicknessService sicknessService) { //, RuleService ruleService) {
+    public SicknessController(SicknessService sicknessService, RuleService ruleService) {
         this.sicknessService = sicknessService;
-        // this.ruleService = ruleService;
+        this.ruleService = ruleService;
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -65,10 +66,8 @@ public class SicknessController {
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable long id, @RequestBody SicknessDto sicknessDto) {
         Sickness updated = sicknessService.update(id, sicknessDto.createSickness());
-        if (updated == null) {
-            return new ResponseEntity<>("non-existing or name taken!",
-                    HttpStatus.BAD_REQUEST);
-        }
+        if (updated == null)
+            return new ResponseEntity<>("non-existing or name taken!", HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
@@ -86,10 +85,12 @@ public class SicknessController {
 //        return new ResponseEntity<>(sicknesses, HttpStatus.OK);
 //    }
 
-//    @PreAuthorize("hasAuthority('DOCTOR')")
-//    @GetMapping("/name")
-//    public ResponseEntity findSicknessByName(@RequestParam String name) {
-//        final Sickness sickness = ruleService.findSicknessByName(name.toLowerCase());
-//        return new ResponseEntity<>(sickness, HttpStatus.OK);
-//    }
+    @PreAuthorize("hasAuthority('DOCTOR')")
+    @GetMapping("/find")
+    public ResponseEntity findSicknessByName(@RequestParam String name) {
+        final Sickness found = ruleService.findSicknessByName(name);
+        if (found == null)
+            return new ResponseEntity<>("not found!", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(found, HttpStatus.OK);
+    }
 }
