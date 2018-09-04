@@ -14,17 +14,13 @@ rule "diagnosis of Group 1 sicknesses"
 salience 50
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect(Symptom() over window:time(10s))
+        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
 
         $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
         List($numGen: size, size >= 4) from collect (
             Symptom(this memberOf $symptoms) from $gen
         )
-        // this sickness wasn't already diagnosed with a higher certainty/percentage
-//        not (
-//            PossibleSickness((sickness.name == $s.name) && (percentage >= ($numGen * 100.0 / $gen.size())))
-//            over window:time(10s)
-//        )
     then
         double percentage = $numGen * 100.0 / $gen.size(); // not needed without println
         System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
@@ -38,7 +34,7 @@ query getDiagnosis()
         PossibleSickness($percentage: percentage) from $possibleSicknesses,
         max($percentage)
     )
-    $diagnosis: PossibleSickness(percentage == $highestPercentage) from $possibleSicknesses // over window:time(10s)
+    $diagnosis: PossibleSickness(percentage == $highestPercentage) from $possibleSicknesses
 end
 
 //  T E S T I N G   O N L Y !!!
@@ -58,7 +54,8 @@ salience 49
 agenda-group "diagnosis"
 when
     Date( $time: time ) from new Date()
-    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(10s))
+    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(10s)) // A A A A
+    // $possibleSicknesses: List() from collect(PossibleSickness()) // F F F F F F F F F
     $sicknesses: List() from collect(Sickness() over window:time(10s))
 then
     System.out.println("\n======= " + $possibleSicknesses.size() + " RECENT possible Sicknesses!!\n");

@@ -13,15 +13,12 @@ import org.drools.core.ClassObjectFilter;
 import org.kie.api.KieBase;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -43,20 +40,16 @@ public class RuleServiceImpl implements RuleService {
         this.kieSession = kieSession; // А А А А А А А А А
     }
 
-    // insert all sicknesses (and RuleService to use it in rules)
+    /**
+     * Insert all sicknesses (and RuleService to use it in rules)
+     */
     private void initializeSession() {
-        //KieSession kieSession = KieSessionService.getSession(SecurityUtils.getUsernameOfLoggedUser());// F
-        kieSession.insert(this); // here or in KieSessionService???
+        // F //KieSession kieSession = KieSessionService.getSession(SecurityUtils.getUsernameOfLoggedUser()); // F
+        kieSession.insert(this); // A A A A A A A
 
-        Collection<?> insertedSicknesses = kieSession.getObjects(new ClassObjectFilter(Sickness.class));
-        System.out.println("# of sicknesses before insert: " + insertedSicknesses.size());
-
-        // TODO: this way or to put @Expire(1m) on Sickness? That needs a Date property in Sickness for @Timestamp :( :(
-//        if (insertedSicknesses.size() == 0) {
-            final List<Sickness> sicknesses = sicknessService.findAll();
-            System.out.println("\ninserted: " + sicknesses.size() + " sicknesses!\n");
-            sicknesses.forEach(kieSession::insert);
-//        }
+        final List<Sickness> sicknesses = sicknessService.findAll();
+        System.out.println("\ninserted: " + sicknesses.size() + " sicknesses!\n");
+        sicknesses.forEach(kieSession::insert);
     }
 
     @Override // F F F F F List<PossibleAllergies>
@@ -89,32 +82,13 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public PossibleSickness getDiagnosedSickness(long id, DiagnosisDto diagnosisDto) {
-//        List<PossibleSickness> possibleSicknesses = findPossibleSicknesses(id, diagnosisDto);
-//        if (possibleSicknesses == null)
-//            return null;
-//        PossibleSickness mostProbable = possibleSicknesses.iterator().next();
         QueryResults results = findPossibleSicknesses(id, diagnosisDto);
         System.out.println("results: " + results);
         assert results != null;
-        //assert results.iterator().hasNext();
-        Iterator<QueryResultsRow> iterator = results.iterator();
-        System.out.println("iterator: " + iterator);
 
-        if (iterator.hasNext()) {
-//            return (PossibleSickness) results.iterator().next().get("$diagnosis");
-//        }
-            PossibleSickness mostProbable = (PossibleSickness) iterator.next().get("$diagnosis");
-            System.out.println("::::::::: most probable sickness ::::::::::::::");
-            System.out.println(mostProbable.getSickness().getName() + " " + mostProbable.getPercentage());
+        if (results.iterator().hasNext()) // $DIAGNOSIS
+            return (PossibleSickness) results.iterator().next().get("$diagnosis");
 
-            while(iterator.hasNext()) {
-                PossibleSickness lessProbable = (PossibleSickness) iterator.next().get("$diagnosis");
-
-                System.out.println("::::::::: LESS probable sickness ::::::::::::::");
-                System.out.println(lessProbable.getSickness().getName() + " " + lessProbable.getPercentage());
-            }
-            return mostProbable;
-        }
         System.out.println("iterator was empty!");
         return null;
     }
@@ -122,10 +96,13 @@ public class RuleServiceImpl implements RuleService {
     @Override
     public List<PossibleSickness> getPossibleSicknesses(long id, DiagnosisDto diagnosisDto) {
         QueryResults results = findPossibleSicknesses(id, diagnosisDto);
+        System.out.println("results: " + results);
         assert results != null;
 
-        if (results.iterator().hasNext())
+        if (results.iterator().hasNext()) // POSSIBLE SICKNESSES
             return (List<PossibleSickness>) results.iterator().next().get("$possibleSicknesses");
+
+        System.out.println("iterator was empty!");
         return null;
     }
 
@@ -143,13 +120,12 @@ public class RuleServiceImpl implements RuleService {
         Collection<?> insertedSymptoms = kieSession.getObjects(new ClassObjectFilter(Symptom.class));
         System.out.println("# of symptoms before insert: " + insertedSymptoms.size());
 
-        List<FactHandle> factHandles = new ArrayList<>();
         diagnosisDto.getSymptoms().forEach(s -> {
             final Symptom symptom = symptomService.findById(s.getId());
             if (symptom != null)
-                factHandles.add(kieSession.insert(symptom));
+                kieSession.insert(symptom);
         });
-        factHandles.add(kieSession.insert(diagnosisDto));
+        kieSession.insert(diagnosisDto);
 
         // check patient's temperature, add "complex" symptoms and diagnose the patient
         kieSession.getAgenda().getAgendaGroup("diagnosis").setFocus();
@@ -158,26 +134,16 @@ public class RuleServiceImpl implements RuleService {
         // "temperature" rules are on top of the stack, then "complex symptoms", then "diagnosis"
         kieSession.fireAllRules();
 
-
-        // // old way - problem with multiple same PossibleSicknesses objects
-        // // NEW NEW NEW - not a problem after deletion of fact handles was implemented :)
-//        Collection<?> possibleSicknesses = kieSession.getObjects(new ClassObjectFilter(PossibleSickness.class));
-//
-//        return possibleSicknesses.stream().map(s -> (PossibleSickness) s)
-//                .sorted(Comparator.comparingDouble(PossibleSickness::getPercentage).reversed())
-//                .collect(Collectors.toList());
         QueryResults result = kieSession.getQueryResults("getDiagnosis");
 
         insertedSymptoms = kieSession.getObjects(new ClassObjectFilter(Symptom.class));
         System.out.println("# of symptoms AFTER insertions AND RULES FIRED: " + insertedSymptoms.size());
+
+        // F F F F F F F F F F F F F F F F F F F   |  ONLY if not using    @Event  +  window:time
         // clear memory of Symptoms and Diagnosis DTOs for next diagnosis to be valid
-        // ONLY if not using    @Event  +  window:time  !!!
-//        for( Object object: insertedSymptoms ){
-//            kieSession.delete(kieSession.getFactHandle(object));
-//        }
 //        for( Object object: kieSession.getObjects() ){
 //            kieSession.delete(kieSession.getFactHandle(object));
-//        }
+//        } // F F F F F F F F F F F F F F F F F
         return result;
     }
 
