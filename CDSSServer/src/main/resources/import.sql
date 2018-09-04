@@ -7,7 +7,7 @@ INSERT INTO user_table (id, role, name, username, password) VALUES (4, 'DOCTOR',
 INSERT INTO doctor (id) VALUES (2);
 INSERT INTO doctor (id) VALUES (3);
 INSERT INTO doctor (id) VALUES (4);
--- --
+-- -- -- SYMPTOMS -- -- --
 INSERT INTO symptom (id, name) VALUES (1, 'Runny nose');
 INSERT INTO symptom (id, name) VALUES (2, 'Sore throat');
 INSERT INTO symptom (id, name) VALUES (3, 'Headache');
@@ -37,7 +37,7 @@ INSERT INTO symptom (id, name) VALUES (26, 'Surgery recovery');
 INSERT INTO symptom (id, name) VALUES (27, 'Diarrhea');
 INSERT INTO symptom (id, name) VALUES (28, 'Last 14 days with fever');
 INSERT INTO symptom (id, name) VALUES (29, 'Last 21 days antibiotics');
--- --
+-- -- -- SICKNESSES -- -- --
 INSERT INTO sickness (id, name, sickness_group) VALUES (1, 'Cold', 1);
 INSERT INTO sickness (id, name, sickness_group) VALUES (2, 'Fever', 1);
 INSERT INTO sickness (id, name, sickness_group) VALUES (3, 'Tonsillitis', 1);

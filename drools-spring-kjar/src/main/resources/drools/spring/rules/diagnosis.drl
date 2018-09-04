@@ -56,7 +56,6 @@ end
 
 /** ** ** ** ** ** **/
 /**  G R O U P   2 **/
-/** **/
 rule "diagnosis of Group 2 sicknesses"
 salience 40
 agenda-group "diagnosis"
@@ -68,20 +67,33 @@ agenda-group "diagnosis"
             Symptom(this memberOf $symptoms) from $gen
         )
     then
+        System.out.println("\nInserting " + $s.getName() + " with " + 100 + "% (Group 2!)\n");
         insert(new PossibleSickness($s, 100.0));
 end
-//
-//rule "filter possible sicknesses from group 2"
-//salience 14
-//agenda-group "detect"
-//    when
-//        $p: PossibleSickness($s: sickness, sickness.sicknessGroup == 2)
-//        not SuggestedSickness(sickness.sicknessGroup == 2)
-//    then
-//        insert(new SuggestedSickness($s, 1.0));
-//end
 
-// */
+/** ** ** ** ** ** **/
+/**  G R O U P   3 **/
+rule "detect possible illnesses from group 3"
+salience 30
+agenda-group "diagnosis"
+    when
+        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
+        $s: Sickness(sicknessGroup == 3, $gen: generalSymptoms, $spec: specificSymptoms)
+        List($numGen: size, size >= 2) from collect (
+            Symptom(this memberOf $symptoms) from $gen
+        )
+        List($numSpec: size, size >= 1) from collect (
+            Symptom(this memberOf $symptoms) from $spec
+        )
+    then
+        int weightSpec = 1; // 1,2,3,4.. // effect of number of specific symptoms in a Group3-Sickness
+        double percentage = ($numGen + weightSpec * $numSpec) * 100.0 / ($gen.size() + weightSpec * $spec.size()); // A A A A
+//        double percentage = ($numGen + $numSpec) / ($gen.size() + $spec.size()); // F F F F F F F
+        // System.out.println("$numGen, $numSpec, gen.size, spec.size: "+$numGen+", "+$numSpec+", "+$gen.size()+", "+$spec.size());
+        System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
+        insert(new PossibleSickness($s, percentage));
+end
 
 //  T E S T I N G   O N L Y !!!
 rule "possible sicknesses"
