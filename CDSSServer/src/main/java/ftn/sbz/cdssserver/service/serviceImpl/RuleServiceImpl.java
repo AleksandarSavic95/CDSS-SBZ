@@ -85,17 +85,18 @@ public class RuleServiceImpl implements RuleService {
         if (!reasonPossibleSicknesses(id, diagnosisDto))
             return null;
 
+        // more dangerous sicknesses have bigger priority (FalsePositive better than FalseNegative)
         QueryResults results = kieSession.getQueryResults("getDiagnosis", 3);
-        if (! results.iterator().hasNext()) {// MIND THE "NOT" --->  !  <---
+        //  ! <--- MIND THE "NOT"!
+        if (! results.iterator().hasNext()) {
             results = kieSession.getQueryResults("getDiagnosis", 2);
-            if (! results.iterator().hasNext()) {// MIND THE "NOT" --->  !  <---
+            if (! results.iterator().hasNext()) {
                 results = kieSession.getQueryResults("getDiagnosis", 1);
+                if (! results.iterator().hasNext()) {
+                    System.out.println("\nNO DIAGNOSIS!\n");
+                    return null;
+                }
             }
-        }
-
-        if (!results.iterator().hasNext()) {
-            System.out.println("\nNO DIAGNOSIS!\n");
-            return null;
         }
 
         return (PossibleSickness) results.iterator().next().get("$D");
@@ -106,9 +107,6 @@ public class RuleServiceImpl implements RuleService {
         if (!reasonPossibleSicknesses(id, diagnosisDto))
             return null;
         QueryResults results = kieSession.getQueryResults("getPossibleSicknesses");
-
-        System.out.println("results: " + results);
-        assert results != null;
 
         if (results.iterator().hasNext()) // POSSIBLE SICKNESSES
             return (List<PossibleSickness>) results.iterator().next().get("$possibleSicknesses");

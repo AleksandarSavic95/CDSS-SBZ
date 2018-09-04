@@ -10,23 +10,6 @@ import ftn.sbz.cdssserver.model.rules.PossibleSickness;
 import java.util.List;
 import java.util.Date;
 
-rule "diagnosis of Group 1 sicknesses"
-salience 50
-agenda-group "diagnosis"
-    when
-        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
-        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
-
-        $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
-        List($numGen: size, size >= 4) from collect (
-            Symptom(this memberOf $symptoms) from $gen
-        )
-    then
-        double percentage = $numGen * 100.0 / $gen.size(); // not needed without println
-        System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
-        insert(new PossibleSickness($s, percentage))
-end
-
 /** Get newest PossibleSicknesses and find the most probable one **/
 query getDiagnosis(int groupNumber) // TODO: try sending  sicknessGroup  as parameter to this query ! Then... see below
 // Then choose from one of the 3 diagnosis (most or least dangerous) and unite all 3 lists if returning a list :)
@@ -52,6 +35,26 @@ end
 
 query getPossibleSicknesses()
     $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
+end
+
+
+/** ** ** ** ** ** **/
+/**  G R O U P   1 **/
+rule "diagnosis of Group 1 sicknesses"
+salience 50
+agenda-group "diagnosis"
+    when
+        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
+
+        $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
+        List($numGen: size, size >= 4) from collect (
+            Symptom(this memberOf $symptoms) from $gen
+        )
+    then
+        double percentage = $numGen * 100.0 / $gen.size(); // not needed without println
+        System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
+        insert(new PossibleSickness($s, percentage))
 end
 
 /** ** ** ** ** ** **/
@@ -87,10 +90,9 @@ agenda-group "diagnosis"
             Symptom(this memberOf $symptoms) from $spec
         )
     then
-        int weightSpec = 1; // 1,2,3,4.. // effect of number of specific symptoms in a Group3-Sickness
+        int weightSpec = 3; // 1,2,3,4.. // effect of number of specific symptoms in a Group3-Sickness
         double percentage = ($numGen + weightSpec * $numSpec) * 100.0 / ($gen.size() + weightSpec * $spec.size()); // A A A A
 //        double percentage = ($numGen + $numSpec) / ($gen.size() + $spec.size()); // F F F F F F F
-        // System.out.println("$numGen, $numSpec, gen.size, spec.size: "+$numGen+", "+$numSpec+", "+$gen.size()+", "+$spec.size());
         System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
         insert(new PossibleSickness($s, percentage));
 end
@@ -120,13 +122,3 @@ then
     System.out.println("\n======= " + $sicknesses.size() + " RECENT Sicknesses!!\n");
 end
 
-/*
-$s: Sickness($gen: generalSymptoms, $spec: specificSymptoms)
-        List($numGen: size) from collect(
-            Symptom(this memberOf $symptoms) from $gen
-        )
-        List($numSpec: size) from collect(
-            Symptom(this memberOf $symptoms) from $spec
-        )
-        eval($numGen > 0 || $numSpec > 0)
-*/
