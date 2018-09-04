@@ -17,7 +17,6 @@ public class CdssserverApplication {
     private static final String GROUP_ID = "ftn.sbz";
     private static final String ARTIFACT_ID = "drools-spring-kjar";
     private static final String VERSION = "0.0.1-SNAPSHOT";
-    private static final String KIE_SESSION_NAME = "UserSession";
 
 	public static void main(String[] args) {
 		SpringApplication.run(CdssserverApplication.class, args);

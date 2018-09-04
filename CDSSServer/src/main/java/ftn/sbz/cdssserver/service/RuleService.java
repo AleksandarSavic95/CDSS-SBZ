@@ -12,9 +12,14 @@ import java.util.List;
 public interface RuleService {
     PossibleAllergies checkAllergies(long id, @RequestBody List<Medicine> medicines);
 
+    Sickness findSicknessByName(String s);
+
+    PossibleSickness getDiagnosedSickness(long id, DiagnosisDto diagnosisDto);
+
     List<PossibleSickness> getPossibleSicknesses(long id, DiagnosisDto diagnosisDto);
 
-    int getRulesAmount();
+    // used in rules!
+    void insertSymptom(String symptomName);
 
-    Sickness findSicknessByName(String s);
+    int getRulesAmount();
 }

@@ -1,0 +1,130 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.service.RuleService;
+import ftn.sbz.cdssserver.model.Treatment;
+import ftn.sbz.cdssserver.model.Patient;
+import ftn.sbz.cdssserver.model.sickness.Sickness;
+import ftn.sbz.cdssserver.model.sickness.Symptom;
+
+import java.util.List;
+import java.util.Date;
+
+rule "patient had cold or fever in the past 60 days"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        $count: Number(intValue >= 1) from accumulate(
+            $t: Treatment( sickness.name == "Cold" || sickness.name == "Fever")
+            over window:time(60d),
+            count(1)
+        )
+        not Symptom(name == "Cold or Fever in the last 60 days")
+    then
+        $ruleService.insertSymptom("Cold or Fever in the last 60 days");
+        System.out.println("Cold or Fever in the last 60 days");
+end
+
+rule "patient had high blood pressure 10+ times in the last 6 months"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        $count: Number(intValue >= 10) from accumulate(
+            $t: Treatment(sickness.name == "High blood pressure")
+            over window:time(180d),
+            count(1)
+        )
+        not Symptom(name == "10 cases of high blood pressure in the last 6 months")
+    then
+        $ruleService.insertSymptom("10 cases of high blood pressure in the last 6 months");
+        System.out.println("10 cases of high blood pressure in the last 6 months");
+end
+
+rule "patient has hypertension for 6+ months"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        Date( $time: time ) from new Date()
+        $count: Number(intValue >= 1) from accumulate(
+            $t: Treatment( timestamp before[180d] $time, sickness.name == "Hypertension"),
+            count(1)
+        )
+        not Symptom(name == "Over 6 months hypertension")
+    then
+        $ruleService.insertSymptom("Over 6 months hypertension");
+        System.out.println("Over 6 months hypertension");
+end
+
+rule "patient has diabetes"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        $p: Patient($s: sickFrom)
+        Number(intValue >= 1) from accumulate(
+            Sickness(name == "Diabetes") from $s,
+            count(1)
+        )
+        not Symptom(name == "Diabetes")
+    then
+        $ruleService.insertSymptom("Diabetes");
+        System.out.println("Diabetes");
+end
+
+rule "patient is recovering from surgery"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        $p: Patient($s: sickFrom)
+        Number(intValue >= 1) from accumulate(
+            Sickness(name == "Recovering from surgery") from $s,
+            count(1)
+        )
+        not Symptom(name == "Surgery recovery")
+    then
+        $ruleService.insertSymptom("Surgery recovery");
+        System.out.println("Surgery recovery");
+end
+
+
+rule "patient had high body temperature in the last 14 days"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        $list: List(size > 0) from accumulate(
+            // TODO: Check that treatment belongs to right patient
+            // TODO: Put @Expires on Patient class, so that multiple patients can be diagnosed within one  Kie(Doctor)Session
+            $t: Treatment($sickness: sickness) // sickness not needed ?!?!?!?
+            over window:time(14d),
+            collectList($t)
+        )
+        $treatment: Treatment($genSymptoms: sickness.generalSymptoms) from $list
+        $sym: Symptom(name == "temperature over 38" || name == "temperature between 40 and 41") from $genSymptoms
+        not Symptom(name == "Last 14 days with fever")
+    then
+        $ruleService.insertSymptom("Last 14 days with fever");
+        System.out.println("Last 14 days with fever");
+end
+
+rule "patient took antibiotics in the past 21 days"
+salience 100
+agenda-group "diagnosis"
+    when
+        $ruleService: RuleService()
+        $list: List(size > 0) from accumulate(
+            $t: Treatment($sickness: sickness)
+            over window:time(21d),
+            collectList($t)
+        )
+        $treatment: Treatment($medicine: medicines) from $list
+        $m: Medicine(type.name == "ANTIBIOTIC") from $medicine
+        not Symptom(name == "Last 21 days antibiotics"  )
+    then
+        $ruleService.insertSymptom("Last 21 days antibiotics");
+        System.out.println("Last 21 days antibiotics");
+end

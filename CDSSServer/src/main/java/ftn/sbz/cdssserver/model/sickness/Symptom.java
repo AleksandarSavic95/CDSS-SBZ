@@ -1,9 +1,12 @@
 package ftn.sbz.cdssserver.model.sickness;
 
+import org.kie.api.definition.type.Role;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
+@Role(Role.Type.EVENT)
 public class Symptom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

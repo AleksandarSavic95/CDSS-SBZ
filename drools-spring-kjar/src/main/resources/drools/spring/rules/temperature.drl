@@ -1,0 +1,30 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.service.RuleService;
+import ftn.sbz.cdssserver.model.dto.DiagnosisDto;
+import ftn.sbz.cdssserver.model.sickness.Symptom;
+
+rule "temperature higher than 38"
+salience 100
+agenda-group "temperature"
+    when
+        $ruleService: RuleService()
+        DiagnosisDto(temperature > 38)
+        not Symptom(name == "temperature over 38"  )
+    then
+        $ruleService.insertSymptom("temperature over 38");
+        System.out.println("temperature over 38");
+end
+
+rule "temperature between 40 and 41"
+salience 100
+agenda-group "temperature"
+    when
+        $ruleService: RuleService()
+        DiagnosisDto(temperature >= 40 && temperature <= 41)
+        not Symptom(name == "temperature between 40 and 41"  )
+    then
+        $ruleService.insertSymptom("temperature between 40 and 41");
+        System.out.println("temperature between 40 and 41");
+end

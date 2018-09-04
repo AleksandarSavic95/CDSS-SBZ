@@ -91,7 +91,17 @@ public class PatientController {
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
-    @PostMapping("/{id}/possibleSicknesses")
+    @PostMapping("/{id}/possibleSickness")
+    public ResponseEntity getDiagnosedSickness(@PathVariable long id, @RequestBody DiagnosisDto diagnosisDto) {
+        final PossibleSickness sickness = ruleService.getDiagnosedSickness(id, diagnosisDto);
+        if (sickness == null) {
+            return new ResponseEntity<>("non-existing patient!", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(sickness, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('DOCTOR')")
+    @PostMapping("/{id}/allPossibleSicknesses")
     public ResponseEntity getPossibleSicknesses(@PathVariable long id, @RequestBody DiagnosisDto diagnosisDto) {
         final List<PossibleSickness> sicknesses = ruleService.getPossibleSicknesses(id, diagnosisDto);
         if (sicknesses == null) {
@@ -100,14 +110,15 @@ public class PatientController {
         return new ResponseEntity<>(sicknesses, HttpStatus.OK);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/kie")
-    public ResponseEntity getDoctorSession() {
-        System.out.println("SecurityUtils.getUsernameOfLoggedUser(): " + SecurityUtils.getUsernameOfLoggedUser());
-        return new ResponseEntity<>(
-                KieSessionService.getSession(SecurityUtils.getUsernameOfLoggedUser()).getIdentifier(),
-                HttpStatus.OK);
-    }
+    // F F F F F F F F F F F F F F F F F F F F F F F F F
+//    @PreAuthorize("isAuthenticated()")
+//    @GetMapping("/kie")
+//    public ResponseEntity getDoctorSession() {
+//        System.out.println("SecurityUtils.getUsernameOfLoggedUser(): " + SecurityUtils.getUsernameOfLoggedUser());
+//        return new ResponseEntity<>(
+//                KieSessionService.getSession(SecurityUtils.getUsernameOfLoggedUser()).getIdentifier(),
+//                HttpStatus.OK);
+//    }
 
     // A A A A A A A A A A A A A A A A A A A A
     @PreAuthorize("isAuthenticated()")

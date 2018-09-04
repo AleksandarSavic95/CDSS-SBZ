@@ -1,0 +1,77 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.service.RuleService;
+import ftn.sbz.cdssserver.model.dto.DiagnosisDto;
+import ftn.sbz.cdssserver.model.sickness.Sickness;
+import ftn.sbz.cdssserver.model.sickness.Symptom;
+import ftn.sbz.cdssserver.model.rules.PossibleSickness;
+
+import java.util.List;
+import java.util.Date;
+
+rule "diagnosis of Group 1 sicknesses"
+salience 50
+agenda-group "diagnosis"
+    when
+        $symptoms: List() from collect(Symptom() over window:time(30s))
+
+        $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
+        List($numGen: size, size >= 4) from collect (
+            Symptom(this memberOf $symptoms) from $gen
+        )
+        // this sickness wasn't already diagnosed with a higher certainty/percentage
+//        not (
+//            PossibleSickness((sickness.name == $s.name) && (percentage >= ($numGen * 100.0 / $gen.size())))
+//            over window:time(30s)
+//        )
+    then
+        double percentage = $numGen * 100.0 / $gen.size(); // not needed without println
+        System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
+        insert(new PossibleSickness($s, percentage))
+end
+
+// get newest PossibleSicknesses and find the most probable one
+query getDiagnosis()
+    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(30s))
+    $highestPercentage: Number() from accumulate (
+        PossibleSickness($percentage: percentage) from $possibleSicknesses,
+        max($percentage)
+    )
+    $diagnosis: PossibleSickness(percentage == $highestPercentage) from $possibleSicknesses // over window:time(30s)
+end
+
+//  T E S T I N G   O N L Y !!!
+rule "possible sicknesses"
+salience 49
+agenda-group "diagnosis"
+when
+    $possibleSicknesses: List() from collect(PossibleSickness())
+    $sicknesses: List() from collect(Sickness())
+then
+    System.out.println("\n======= " + $possibleSicknesses.size() + " possible Sicknesses!!\n");
+    System.out.println("\n======= " + $sicknesses.size() + " Sicknesses!!\n");
+end
+
+rule "recent possible sicknesses (last X minutes)"
+salience 49
+agenda-group "diagnosis"
+when
+    Date( $time: time ) from new Date()
+    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(30s))
+    $sicknesses: List() from collect(Sickness() over window:time(30s))
+then
+    System.out.println("\n======= " + $possibleSicknesses.size() + " RECENT possible Sicknesses!!\n");
+    System.out.println("\n======= " + $sicknesses.size() + " RECENT Sicknesses!!\n");
+end
+
+/*
+$s: Sickness($gen: generalSymptoms, $spec: specificSymptoms)
+        List($numGen: size) from collect(
+            Symptom(this memberOf $symptoms) from $gen
+        )
+        List($numSpec: size) from collect(
+            Symptom(this memberOf $symptoms) from $spec
+        )
+        eval($numGen > 0 || $numSpec > 0)
+*/
