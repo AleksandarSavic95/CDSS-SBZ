@@ -27,19 +27,24 @@ agenda-group "diagnosis"
         insert(new PossibleSickness($s, percentage))
 end
 
-// get newest PossibleSicknesses and find the most probable one
-query getDiagnosis()
+/** Get newest PossibleSicknesses and find the most probable one **/
+query getDiagnosis() // TODO: try sending  sicknessGroup  as parameter to this query ! Then... see below
+// Then choose from one of the 3 diagnosis (most or least dangerous) and unite all 3 lists if returning a list :)
     $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
     $highestPercentage: Number() from accumulate (
         PossibleSickness($percentage: percentage) from $possibleSicknesses,
         max($percentage)
     )
-    $diagnosis: PossibleSickness(percentage == $highestPercentage) from $possibleSicknesses
+    $earliestDateDiagnosed: Number() from accumulate (
+        PossibleSickness($dateDiagnosed: dateDiagnosed, percentage == $highestPercentage) from $possibleSicknesses,
+        min($dateDiagnosed.getTime())
+    )
+    $diagnosis: PossibleSickness(percentage == $highestPercentage, dateDiagnosed.getTime() == $earliestDateDiagnosed) from $possibleSicknesses
 end
 
 //  T E S T I N G   O N L Y !!!
 rule "possible sicknesses"
-salience 49
+salience 3
 agenda-group "diagnosis"
 when
     $possibleSicknesses: List() from collect(PossibleSickness())
@@ -50,7 +55,7 @@ then
 end
 
 rule "recent possible sicknesses (last X minutes)"
-salience 49
+salience 3
 agenda-group "diagnosis"
 when
     Date( $time: time ) from new Date()
