@@ -102,19 +102,19 @@ INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (8, 27);
 INSERT INTO sickness_specific_symptom (sickness_id, specific_id) VALUES (8, 26);
 INSERT INTO sickness_specific_symptom (sickness_id, specific_id) VALUES (8, 28);
 INSERT INTO sickness_specific_symptom (sickness_id, specific_id) VALUES (8, 29);
--- --
+-- -- -- MEDICINES -- -- --
+INSERT INTO medicine (id, name, type) VALUES (1, 'ibuprofen', 'ANALGETIC');
+INSERT INTO medicine (id, name, type) VALUES (2, 'paracetamol', 'ANTIBIOTIC');
+-- -- -- INGREDIENTS -- -- --
 INSERT INTO ingredient (id, name) VALUES (1, 'sorbitol');
 INSERT INTO ingredient (id, name) VALUES (2, 'vitamin C');
 INSERT INTO ingredient (id, name) VALUES (3, 'ascorbic acid');
--- --
-INSERT INTO medicine (id, name, type) VALUES (1, 'ibuprofen', 'ANALGETIC');
-INSERT INTO medicine (id, name, type) VALUES (2, 'paracetamol', 'ANTIBIOTIC');
 -- --
 INSERT INTO medicine_ingredient (medicine_id, ingredient_id) VALUES (1, 2);
 INSERT INTO medicine_ingredient (medicine_id, ingredient_id) VALUES (1, 3);
 
 INSERT INTO medicine_ingredient (medicine_id, ingredient_id) VALUES (2, 1);
--- --
+-- -- -- PATIENTS -- -- --
 INSERT INTO patient (id, medical_card_number, name) VALUES (1, 'p-1111', 'Milivoje Radomir');
 INSERT INTO patient (id, medical_card_number, name) VALUES (2, 'p-2222', 'Ljubivoje Rsumovic');
 INSERT INTO patient (id, medical_card_number, name) VALUES (3, 'p-3333', 'Jegdomir Slavoljub');
@@ -123,28 +123,29 @@ INSERT INTO patient_sickness (patient_id, sickness_id) VALUES (1, 6);
 INSERT INTO patient_sickness (patient_id, sickness_id) VALUES (1, 10);
 
 INSERT INTO patient_sickness (patient_id, sickness_id) VALUES (2, 3);
--- --
+-- -- -- ALLERGENS -- -- --
 INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (1, 1);
 INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (1, 2);
 INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (2, 2);
 -- --
 INSERT INTO allergen_ingredient (patient_id, ingredient_id) VALUES (2, 1);
 INSERT INTO allergen_ingredient (patient_id, ingredient_id) VALUES (3, 1);
--- --
+-- -- -- TREATMENTS -- -- --
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (1, '2018-06-14 19:44:52', 5, 2, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (2, '2018-06-14 19:44:52', 2, 2, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (3, '2018-06-14 19:44:52', 9, 3, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (4, '2018-06-14 19:44:52', 9, 3, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (5, '2018-06-14 19:44:52', 9, 4, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (6, '2018-06-14 19:44:52', 9, 4, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (7, '2018-06-14 19:44:52', 9, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (8, '2018-06-14 19:44:52', 9, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (9, '2018-06-14 19:44:52', 9, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (10, '2018-06-14 19:44:52', 9, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (11, '2018-06-14 19:44:52', 9, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (12, '2018-06-14 19:44:52', 9, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (13, '2018-06-14 19:44:52', 9, 2, 1);
--- --
+-- patient[id=1] had 7 cases of highBloodPressure[id=9]
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (7, '2018-09-04 11:41:52', 9, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (8, '2018-09-04 11:42:52', 9, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (9, '2018-09-04 11:43:52', 9, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (10, '2018-09-04 11:44:52', 9, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (11, '2018-09-04 11:45:52', 9, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (12, '2018-09-04 11:46:52', 9, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (13, '2018-09-04 11:47:52', 9, 2, 1);
+-- --  MEDICINES  -- --
 INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (1, 1);
 INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (2, 1);
 INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (3, 1);

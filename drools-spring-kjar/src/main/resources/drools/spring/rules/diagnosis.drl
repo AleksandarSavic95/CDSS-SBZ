@@ -37,6 +37,8 @@ query getDiagnosis(int groupNumber) // TODO: try sending  sicknessGroup  as para
         ) from $possibleSicknesses,
         max($percentage)
     )
+    // TODO: better prioritizing is when selecting PossibleSickness with max percentage and max number of symptoms
+    // insetad of the one who was firstly inserted, but it is easier to leave it this way :)
     $earliestDateDiagnosed: Number() from accumulate (
         PossibleSickness(
             sickness.sicknessGroup == groupNumber, percentage == $highestPercentage, $dateDiagnosed: dateDiagnosed
@@ -54,36 +56,32 @@ end
 
 /** ** ** ** ** ** **/
 /**  G R O U P   2 **/
-/*
+/** **/
 rule "diagnosis of Group 2 sicknesses"
-salience 15
-agenda-group "detect"
+salience 40
+agenda-group "diagnosis"
     when
         $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
         // $symptoms: List() from collect (Symptom()) // F F F F F F F F
         $s: Sickness(sicknessGroup == 2, $gen: generalSymptoms)
-        $count: Number(intValue == $general.size) from accumulate(
-            Symptom(this memberOf $symptoms) from $gen,
-            count(1)
-        )
         List(size == $gen.size) from collect (
             Symptom(this memberOf $symptoms) from $gen
         )
     then
-        insert(new PossibleSickness($s, $count.intValue(), 0));
+        insert(new PossibleSickness($s, 100.0));
 end
+//
+//rule "filter possible sicknesses from group 2"
+//salience 14
+//agenda-group "detect"
+//    when
+//        $p: PossibleSickness($s: sickness, sickness.sicknessGroup == 2)
+//        not SuggestedSickness(sickness.sicknessGroup == 2)
+//    then
+//        insert(new SuggestedSickness($s, 1.0));
+//end
 
-rule "filter possible sicknesses from group 2"
-salience 14
-agenda-group "detect"
-    when
-        $p: PossibleSickness($s: sickness, sickness.sicknessGroup == 2)
-        not SuggestedSickness(sickness.sicknessGroup == 2)
-    then
-        insert(new SuggestedSickness($s, 1.0));
-end
-
-*/
+// */
 
 //  T E S T I N G   O N L Y !!!
 rule "possible sicknesses"
