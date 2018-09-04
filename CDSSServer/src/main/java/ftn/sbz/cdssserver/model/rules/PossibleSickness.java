@@ -7,7 +7,7 @@ import org.kie.api.definition.type.Timestamp;
 import java.util.Date;
 
 @Role(Role.Type.EVENT)
-@Timestamp("getDateDiagnosed()")
+@Timestamp("getDateDiagnosed")
 public class PossibleSickness {
 
     private Sickness sickness;

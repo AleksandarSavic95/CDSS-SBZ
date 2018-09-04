@@ -14,7 +14,7 @@ rule "diagnosis of Group 1 sicknesses"
 salience 50
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect(Symptom() over window:time(30s))
+        $symptoms: List() from collect(Symptom() over window:time(10s))
 
         $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
         List($numGen: size, size >= 4) from collect (
@@ -23,7 +23,7 @@ agenda-group "diagnosis"
         // this sickness wasn't already diagnosed with a higher certainty/percentage
 //        not (
 //            PossibleSickness((sickness.name == $s.name) && (percentage >= ($numGen * 100.0 / $gen.size())))
-//            over window:time(30s)
+//            over window:time(10s)
 //        )
     then
         double percentage = $numGen * 100.0 / $gen.size(); // not needed without println
@@ -33,12 +33,12 @@ end
 
 // get newest PossibleSicknesses and find the most probable one
 query getDiagnosis()
-    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(30s))
+    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
     $highestPercentage: Number() from accumulate (
         PossibleSickness($percentage: percentage) from $possibleSicknesses,
         max($percentage)
     )
-    $diagnosis: PossibleSickness(percentage == $highestPercentage) from $possibleSicknesses // over window:time(30s)
+    $diagnosis: PossibleSickness(percentage == $highestPercentage) from $possibleSicknesses // over window:time(10s)
 end
 
 //  T E S T I N G   O N L Y !!!
@@ -58,8 +58,8 @@ salience 49
 agenda-group "diagnosis"
 when
     Date( $time: time ) from new Date()
-    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(30s))
-    $sicknesses: List() from collect(Sickness() over window:time(30s))
+    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(10s))
+    $sicknesses: List() from collect(Sickness() over window:time(10s))
 then
     System.out.println("\n======= " + $possibleSicknesses.size() + " RECENT possible Sicknesses!!\n");
     System.out.println("\n======= " + $sicknesses.size() + " RECENT Sicknesses!!\n");
