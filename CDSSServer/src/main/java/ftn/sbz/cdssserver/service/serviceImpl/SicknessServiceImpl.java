@@ -47,8 +47,8 @@ public class SicknessServiceImpl implements SicknessService {
         if (persisted == null)
             return null;
         if (sickness.getName() != null) {
-            // New name must not collide with existing sicknesses
-            if (sicknessRepository.findByName(sickness.getName()) != null)
+            // New name, if changed, must not collide with existing sicknesses
+            if ((!sickness.getName().equals(persisted.getName())) && sicknessRepository.findByName(sickness.getName()) != null)
                 return null;
             persisted.setName(sickness.getName());
         }

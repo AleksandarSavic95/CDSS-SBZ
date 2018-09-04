@@ -55,8 +55,8 @@ public class MedicineServiceImpl implements MedicineService {
         final Medicine persisted = findById(id);
         if (persisted == null)
             return null;
-        // New name must not collide with existing medicines
-        if (medicineRepository.findByName(medicine.getName()) != null)
+        // New name, if changed, must not collide with existing medicines
+        if ((!medicine.getName().equals(persisted.getName())) && medicineRepository.findByName(medicine.getName()) != null)
             return null;
 
         // All ingredients must exist in the DB

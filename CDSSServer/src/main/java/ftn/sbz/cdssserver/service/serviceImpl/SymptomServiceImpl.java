@@ -46,8 +46,8 @@ public class SymptomServiceImpl implements SymptomService {
         final Symptom persisted = findById(id);
         if (persisted == null)
             return null;
-        // New name must not collide with existing symptoms
-        if (symptomRepository.findByName(symptom.getName()) != null)
+        // New name, if changed, must not collide with existing symptoms
+        if ((!symptom.getName().equals(persisted.getName())) && symptomRepository.findByName(symptom.getName()) != null)
             return null;
 
         persisted.setName(symptom.getName());

@@ -45,8 +45,8 @@ public class IngredientServiceImpl implements IngredientService {
         final Ingredient persisted = findById(id);
         if (persisted == null)
             return null;
-        // New name must not collide with existing ingredients
-        if (ingredientRepository.findByName(ingredient.getName()) != null)
+        // New name, if changed, must not collide with existing ingredients
+        if ((!ingredient.getName().equals(persisted.getName())) && ingredientRepository.findByName(ingredient.getName()) != null)
             return null;
         persisted.setName(ingredient.getName());
 
