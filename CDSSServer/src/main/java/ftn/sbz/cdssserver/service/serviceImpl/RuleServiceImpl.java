@@ -82,20 +82,31 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public PossibleSickness getDiagnosedSickness(long id, DiagnosisDto diagnosisDto) {
-        QueryResults results = findPossibleSicknesses(id, diagnosisDto);
-        System.out.println("results: " + results);
-        assert results != null;
+        if (!reasonPossibleSicknesses(id, diagnosisDto))
+            return null;
 
-        if (results.iterator().hasNext()) // $DIAGNOSIS
-            return (PossibleSickness) results.iterator().next().get("$diagnosis");
+        QueryResults results = kieSession.getQueryResults("getDiagnosis", 3);
+        if (! results.iterator().hasNext()) {// MIND THE "NOT" --->  !  <---
+            results = kieSession.getQueryResults("getDiagnosis", 2);
+            if (! results.iterator().hasNext()) {// MIND THE "NOT" --->  !  <---
+                results = kieSession.getQueryResults("getDiagnosis", 1);
+            }
+        }
 
-        System.out.println("iterator was empty!");
-        return null;
+        if (!results.iterator().hasNext()) {
+            System.out.println("\nNO DIAGNOSIS!\n");
+            return null;
+        }
+
+        return (PossibleSickness) results.iterator().next().get("$D");
     }
 
     @Override
     public List<PossibleSickness> getPossibleSicknesses(long id, DiagnosisDto diagnosisDto) {
-        QueryResults results = findPossibleSicknesses(id, diagnosisDto);
+        if (!reasonPossibleSicknesses(id, diagnosisDto))
+            return null;
+        QueryResults results = kieSession.getQueryResults("getPossibleSicknesses");
+
         System.out.println("results: " + results);
         assert results != null;
 
@@ -106,10 +117,10 @@ public class RuleServiceImpl implements RuleService {
         return null;
     }
 
-    private QueryResults findPossibleSicknesses(long id, DiagnosisDto diagnosisDto) {
+    private boolean reasonPossibleSicknesses(long id, DiagnosisDto diagnosisDto) {
         Patient patient = patientService.findById(id);
         if (patient == null)
-            return null;
+            return false;
 
         initializeSession();
 
@@ -134,18 +145,16 @@ public class RuleServiceImpl implements RuleService {
         // "temperature" rules are on top of the stack, then "complex symptoms", then "diagnosis"
         kieSession.fireAllRules();
 
-        QueryResults result = kieSession.getQueryResults("getDiagnosis");
+        return true;
+    }
 
-        insertedSymptoms = kieSession.getObjects(new ClassObjectFilter(Symptom.class));
-        System.out.println("# of symptoms AFTER insertions AND RULES FIRED: " + insertedSymptoms.size());
-
-        // F F F F F F F F F F F F F F F F F F F   |  ONLY if not using    @Event  +  window:time
-        // clear memory of Symptoms and Diagnosis DTOs for next diagnosis to be valid
+    // F F F F F F F F F F F F F F F F F F F   |  ONLY if not using    @Event  +  window:time
+    // clear memory of Symptoms and Diagnosis DTOs for next diagnosis to be valid
+//    private void clearSession() {
 //        for( Object object: kieSession.getObjects() ){
 //            kieSession.delete(kieSession.getFactHandle(object));
 //        } // F F F F F F F F F F F F F F F F F
-        return result;
-    }
+//    }
 
     @Override
     public void insertSymptom(String symptomName) {

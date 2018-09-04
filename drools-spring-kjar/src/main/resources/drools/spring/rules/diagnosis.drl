@@ -28,19 +28,62 @@ agenda-group "diagnosis"
 end
 
 /** Get newest PossibleSicknesses and find the most probable one **/
-query getDiagnosis() // TODO: try sending  sicknessGroup  as parameter to this query ! Then... see below
+query getDiagnosis(int groupNumber) // TODO: try sending  sicknessGroup  as parameter to this query ! Then... see below
 // Then choose from one of the 3 diagnosis (most or least dangerous) and unite all 3 lists if returning a list :)
     $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
     $highestPercentage: Number() from accumulate (
-        PossibleSickness($percentage: percentage) from $possibleSicknesses,
+        PossibleSickness(
+            sickness.sicknessGroup == groupNumber, $percentage: percentage
+        ) from $possibleSicknesses,
         max($percentage)
     )
     $earliestDateDiagnosed: Number() from accumulate (
-        PossibleSickness($dateDiagnosed: dateDiagnosed, percentage == $highestPercentage) from $possibleSicknesses,
+        PossibleSickness(
+            sickness.sicknessGroup == groupNumber, percentage == $highestPercentage, $dateDiagnosed: dateDiagnosed
+        ) from $possibleSicknesses,
         min($dateDiagnosed.getTime())
     )
-    $diagnosis: PossibleSickness(percentage == $highestPercentage, dateDiagnosed.getTime() == $earliestDateDiagnosed) from $possibleSicknesses
+    $D: PossibleSickness(
+            sickness.sicknessGroup == groupNumber, percentage == $highestPercentage, dateDiagnosed.getTime() == $earliestDateDiagnosed
+        ) from $possibleSicknesses
 end
+
+query getPossibleSicknesses()
+    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
+end
+
+/** ** ** ** ** ** **/
+/**  G R O U P   2 **/
+/*
+rule "diagnosis of Group 2 sicknesses"
+salience 15
+agenda-group "detect"
+    when
+        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
+        $s: Sickness(sicknessGroup == 2, $gen: generalSymptoms)
+        $count: Number(intValue == $general.size) from accumulate(
+            Symptom(this memberOf $symptoms) from $gen,
+            count(1)
+        )
+        List(size == $gen.size) from collect (
+            Symptom(this memberOf $symptoms) from $gen
+        )
+    then
+        insert(new PossibleSickness($s, $count.intValue(), 0));
+end
+
+rule "filter possible sicknesses from group 2"
+salience 14
+agenda-group "detect"
+    when
+        $p: PossibleSickness($s: sickness, sickness.sicknessGroup == 2)
+        not SuggestedSickness(sickness.sicknessGroup == 2)
+    then
+        insert(new SuggestedSickness($s, 1.0));
+end
+
+*/
 
 //  T E S T I N G   O N L Y !!!
 rule "possible sicknesses"
