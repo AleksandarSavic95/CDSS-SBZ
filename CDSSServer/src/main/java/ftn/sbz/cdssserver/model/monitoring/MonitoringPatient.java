@@ -16,6 +16,12 @@ public class MonitoringPatient {
         this.sickness = sickness;
     }
 
+    public MonitoringPatient(Patient patient, Sickness sickness, OxygenLevel oxygenLevel) {
+        this.patient = patient;
+        this.sickness = sickness;
+        this.oxygenLevel = oxygenLevel;
+    }
+
     public Patient getPatient() {
         return patient;
     }
@@ -30,5 +36,13 @@ public class MonitoringPatient {
 
     public void setSickness(Sickness sickness) {
         this.sickness = sickness;
+    }
+
+    public OxygenLevel getOxygenLevel() {
+        return oxygenLevel;
+    }
+
+    public void setOxygenLevel(OxygenLevel oxygenLevel) {
+        this.oxygenLevel = oxygenLevel;
     }
 }

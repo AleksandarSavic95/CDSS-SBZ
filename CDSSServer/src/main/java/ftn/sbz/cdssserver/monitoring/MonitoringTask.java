@@ -1,35 +1,24 @@
 package ftn.sbz.cdssserver.monitoring;
 
 import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
+import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
 import org.kie.api.runtime.KieSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.kie.api.runtime.rule.FactHandle;
 
 import java.util.Date;
 
-
-@Component
-@Scope("prototype") // create new component every time it is needed
 public class MonitoringTask implements Runnable {
 
     private MonitoringPatient patient;
     private boolean isMonitored;
 
-    @Autowired
-    @Qualifier("monitoring")
     private KieSession kieSession;
+
+    private FactHandle patientHandle;
 
     public MonitoringTask() {
         this.isMonitored = true;
         System.out.println("MT() CREATED at" + new Date());
-    }
-
-    public MonitoringTask(MonitoringPatient patient) {
-        this.patient = patient;
-        this.isMonitored = true;
-        System.out.println("\nMT(MP) CREATED at" + new Date());
     }
 
     @Override
@@ -40,20 +29,50 @@ public class MonitoringTask implements Runnable {
         System.out.println("\nsickness: " + patient.getSickness().getName());
         System.out.println("inserting patient into kieSession..");
 
-        kieSession.insert(patient);
-
-        while(this.isMonitored()) {
+        this.patientHandle = kieSession.insert(patient);
+        System.out.println("LOOP..... uncomment when not testing");
+        while(this.isMonitored) {
             System.out.printf("Patient %s is being monitored..\n", patient.getPatient().getName());
             try {
                 Thread.sleep(5000);
-                kieSession.getAgenda().getAgendaGroup("monitoring").setFocus();
-                kieSession.fireAllRules();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            System.out.println("FIRING RULES....");
+            fireRules();
         }
         System.out.printf("Patient %s released from monitoring.\n", patient.getPatient().getName());
     }
+
+    private int fireRules() {
+        System.out.println("INTENSIVE CARE SERVICE FIRE_RULES()");
+        kieSession.getAgenda().getAgendaGroup("monitoring").setFocus();
+        return kieSession.fireAllRules();
+    }
+
+    public int changeOxygenLevel(double newLevel) {
+        boolean growth = newLevel > patient.getOxygenLevel().getLevel();
+        final OxygenLevel oxygenLevel = new OxygenLevel(patient, newLevel, growth);
+
+        patient.setOxygenLevel(oxygenLevel);
+
+        kieSession.insert(oxygenLevel);
+        kieSession.update(patientHandle, patient);
+
+        return fireRules();
+    }
+
+//    public int addHeartBeat() {
+//        final HeartBeat heartBeat = new HeartBeat(patient);
+//        kieSession.insert(heartBeat);
+//        return fireRules();
+//    }
+//
+//    public int addUrination(float amount) {
+//        final Urination urination = new Urination(patient, amount);
+//        kieSession.insert(urination);
+//        return fireRules();
+//    }
 
     public MonitoringPatient getPatient() {
         return patient;
@@ -63,11 +82,19 @@ public class MonitoringTask implements Runnable {
         this.patient = patient;
     }
 
-    public boolean isMonitored() {
-        return isMonitored;
-    }
-
     public void setMonitored(boolean monitored) {
         isMonitored = monitored;
+    }
+
+    public void setKieSession(KieSession kieSession) {
+        this.kieSession = kieSession;
+    }
+
+    public FactHandle getPatientHandle() {
+        return patientHandle;
+    }
+
+    public void setPatientHandle(FactHandle patientHandle) {
+        this.patientHandle = patientHandle;
     }
 }

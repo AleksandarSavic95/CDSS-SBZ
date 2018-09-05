@@ -24,21 +24,15 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private final SimpMessagingTemplate template;
 
-    private final PatientService patientService;
-
-    private final ApplicationContext applicationContext;
-
     private final TaskExecutor taskExecutor;
 
-    private static HashMap<Long, MonitoringTask> monitoringTasksMap = new HashMap<>();
+    public static HashMap<Long, MonitoringTask> monitoringTasksMap = new HashMap<>();
 
     @Autowired
-    public MonitoringServiceImpl(@Qualifier("monitoring") KieSession kieSession, @Qualifier("monitoringTaskExecutor") TaskExecutor taskExecutor, ApplicationContext applicationContext, PatientService patientService, SimpMessagingTemplate template) {
+    public MonitoringServiceImpl(@Qualifier("monitoring") KieSession kieSession, @Qualifier("monitoringTaskExecutor") TaskExecutor taskExecutor, SimpMessagingTemplate template) {
         this.kieSession = kieSession;
         this.taskExecutor = taskExecutor;
-        this.applicationContext = applicationContext;
         this.template = template;
-        this.patientService = patientService;
         kieSession.setGlobal("monitoringService", this); // !!!
     }
 
@@ -48,13 +42,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     }
 
     @Override
-    public String putPatientToIntensiveCare(long patientId, Sickness sickness) {
-        Patient patient = patientService.findById(patientId);
-        if (patient == null)
-            return "Patient not found!";
-
-        // Sickness sickness = sicknessService.findById( ??? );
-
+    public String putPatientToIntensiveCare(Patient patient, Sickness sickness) {
         System.out.println("putPatientToIntensiveCare B4");
         startMonitoring(patient, sickness);
         System.out.println("putPatientToIntensiveCare AFTER");
@@ -72,9 +60,16 @@ public class MonitoringServiceImpl implements MonitoringService {
         return "Success!";
     }
 
+    @Override
+    public void notifyDoctor(String message) {
+        System.out.println("INTENSIVE CARE SERVICE NOTIFY DOCTOR");
+        template.convertAndSend("/monitoring", message);
+    }
+
     private void startMonitoring(Patient patient, Sickness sickness) {
-        MonitoringTask task = applicationContext.getBean(MonitoringTask.class);
+        MonitoringTask task = new MonitoringTask();
         task.setPatient(new MonitoringPatient(patient, sickness));
+        task.setKieSession(kieSession);
         monitoringTasksMap.put(patient.getId(), task);
         taskExecutor.execute(task);
     }

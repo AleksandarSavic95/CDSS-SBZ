@@ -3,30 +3,33 @@ dialect  "mvel"
 
 import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.service.MonitoringService;
+import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
+
+import java.util.List;
 
 global MonitoringService monitoringService;
 
-/** TEST **/
-rule "monitoring"
-    when
-        MonitoringPatient($name: patient.name)
-    then
-        System.out.println("PATIENT " + $name + " ON MONITORING!");
-end
-/** TEST **/
-
-//rule "oxygen problems"
-//    when
-//        MonitoringPatient($name: patient.name, oxygenLevel.level < 70)
-//    then
-//        System.out.println("\nOxy < 70 for " + $name);
-//end
 /**
-Problema sa kiseonikom:
-o Nivo kiseonika u krvi pacijenta je manja od 70 mmHg
-o U poslednjih 15 minuta nisu zabeleženi događaji rasta nivoa kiseonika.
+● Problem sa kiseonikom:
+   o Nivo kiseonika u krvi pacijenta je manja od 70 mmHg
+   o U poslednjih 15 minuta nisu zabeleženi događaji rasta nivoa kiseonika.
+**/
+rule "oxygen problems"
+agenda-group "monitoring"
+    when
+        $monitoringPatient: MonitoringPatient(oxygenLevel != null, oxygenLevel.level < 70)
+        // List(size == 0) from collect
+        not ( OxygenLevel(patient == $monitoringPatient, growth == true) over window:time(15m) )
+    then
+        System.out.println("\nOxy problems for " + $monitoringPatient.getPatient().getName());
+end
+
+/**
 ● Ubrzan srčani ritam:
 o U poslednjih 10 sekundi zabeleženo više od 25 otkucaja srca
+**/
+
+/**
 ● Hitno potrebna dijaliza:
 o Pacijent boluje od hronične bubrežne bolesti
 o U poslednjih 10 sekundi zabeleženo više od 10 otkucaja srca
