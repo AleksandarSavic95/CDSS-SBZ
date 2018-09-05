@@ -1,5 +1,6 @@
 package ftn.sbz.cdssserver.monitoring;
 
+import ftn.sbz.cdssserver.model.monitoring.HeartBeat;
 import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
 import org.kie.api.runtime.KieSession;
@@ -28,6 +29,9 @@ public class MonitoringTask implements Runnable {
         System.out.println("\npatient: " + patient.getPatient().getName());
         System.out.println("\nsickness: " + patient.getSickness().getName());
         System.out.println("inserting patient into kieSession..");
+
+        OxygenLevel oxygen = new OxygenLevel(patient, 60, false);
+        patient.setOxygenLevel(oxygen);
 
         this.patientHandle = kieSession.insert(patient);
         System.out.println("LOOP..... uncomment when not testing");
@@ -62,11 +66,11 @@ public class MonitoringTask implements Runnable {
         return fireRules();
     }
 
-//    public int addHeartBeat() {
-//        final HeartBeat heartBeat = new HeartBeat(patient);
-//        kieSession.insert(heartBeat);
-//        return fireRules();
-//    }
+    public int addHeartBeat() {
+        final HeartBeat heartBeat = new HeartBeat(patient);
+        kieSession.insert(heartBeat);
+        return fireRules();
+    }
 //
 //    public int addUrination(float amount) {
 //        final Urination urination = new Urination(patient, amount);

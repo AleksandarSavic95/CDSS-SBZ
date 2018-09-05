@@ -4,10 +4,13 @@ dialect  "mvel"
 import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.service.MonitoringService;
 import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
+import ftn.sbz.cdssserver.model.monitoring.HeartBeat;
+//import ftn.sbz.cdssserver.model.monitoring.Urination;
 
 import java.util.List;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-global MonitoringService monitoringService;
+global SimpMessagingTemplate messagingTemplate;
 
 /**
 ● Problem sa kiseonikom:
@@ -21,13 +24,31 @@ agenda-group "monitoring"
         // List(size == 0) from collect
         not ( OxygenLevel(patient == $monitoringPatient, growth == true) over window:time(15m) )
     then
-        System.out.println("\nOxy problems for " + $monitoringPatient.getPatient().getName());
+        String message = "\nOxy problems for " + $monitoringPatient.getPatient().getName();
+        System.out.println(message);
+//        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
 end
 
 /**
 ● Ubrzan srčani ritam:
 o U poslednjih 10 sekundi zabeleženo više od 25 otkucaja srca
 **/
+rule "heart problems"
+agenda-group "monitoring"
+    when
+        $monitoringPatient: MonitoringPatient()
+        List(size > 25) from collect (
+            HeartBeat(patient == $monitoringPatient) over window:time(10s)
+        )
+    then
+        String message = "\nHeart problems for " + $monitoringPatient.getPatient().getName();
+        System.out.println(message);
+        //        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
+end
+
+
+
+
 
 /**
 ● Hitno potrebna dijaliza:

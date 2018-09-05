@@ -33,7 +33,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         this.kieSession = kieSession;
         this.taskExecutor = taskExecutor;
         this.template = template;
-        kieSession.setGlobal("monitoringService", this); // !!!
+        kieSession.setGlobal("messagingTemplate", template); // !!!
     }
 
     @Override
