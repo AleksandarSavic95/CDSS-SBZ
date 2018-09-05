@@ -90,6 +90,7 @@ public class RuleServiceImpl implements RuleService {
         QueryResults results = kieSession.getQueryResults("getDiagnosis", 3);
         //  ! <--- MIND THE "NOT"!
         if (! results.iterator().hasNext()) {
+
             results = kieSession.getQueryResults("getDiagnosis", 2);
             if (! results.iterator().hasNext()) {
                 results = kieSession.getQueryResults("getDiagnosis", 1);
