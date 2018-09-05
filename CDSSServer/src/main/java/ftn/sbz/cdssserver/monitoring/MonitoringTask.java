@@ -3,6 +3,7 @@ package ftn.sbz.cdssserver.monitoring;
 import ftn.sbz.cdssserver.model.monitoring.HeartBeat;
 import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
+import ftn.sbz.cdssserver.model.monitoring.Urination;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 
@@ -71,12 +72,12 @@ public class MonitoringTask implements Runnable {
         kieSession.insert(heartBeat);
         return fireRules();
     }
-//
-//    public int addUrination(float amount) {
-//        final Urination urination = new Urination(patient, amount);
-//        kieSession.insert(urination);
-//        return fireRules();
-//    }
+
+    public int addUrination(double amount) {
+        final Urination urination = new Urination(patient, amount);
+        kieSession.insert(urination);
+        return fireRules();
+    }
 
     public MonitoringPatient getPatient() {
         return patient;

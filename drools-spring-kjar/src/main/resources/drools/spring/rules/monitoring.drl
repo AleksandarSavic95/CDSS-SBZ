@@ -5,7 +5,7 @@ import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.service.MonitoringService;
 import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
 import ftn.sbz.cdssserver.model.monitoring.HeartBeat;
-//import ftn.sbz.cdssserver.model.monitoring.Urination;
+import ftn.sbz.cdssserver.model.monitoring.Urination;
 
 import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,8 +14,8 @@ global SimpMessagingTemplate messagingTemplate;
 
 /**
 ● Problem sa kiseonikom:
-   o Nivo kiseonika u krvi pacijenta je manja od 70 mmHg
-   o U poslednjih 15 minuta nisu zabeleženi događaji rasta nivoa kiseonika.
+    o Nivo kiseonika u krvi pacijenta je manja od 70 mmHg
+    o U poslednjih 15 minuta nisu zabeleženi događaji rasta nivoa kiseonika.
 **/
 rule "oxygen problems"
 agenda-group "monitoring"
@@ -31,7 +31,7 @@ end
 
 /**
 ● Ubrzan srčani ritam:
-o U poslednjih 10 sekundi zabeleženo više od 25 otkucaja srca
+    o U poslednjih 10 sekundi zabeleženo više od 25 otkucaja srca
 **/
 rule "heart problems"
 agenda-group "monitoring"
@@ -43,16 +43,29 @@ agenda-group "monitoring"
     then
         String message = "\nHeart problems for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
-        //        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
+//        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
 end
-
-
-
 
 
 /**
 ● Hitno potrebna dijaliza:
-o Pacijent boluje od hronične bubrežne bolesti
-o U poslednjih 10 sekundi zabeleženo više od 10 otkucaja srca
-o Suma količine mokrenja u poslednjih 12 sati je manja od 100ml
+    o Pacijent boluje od hronične bubrežne bolesti
+    o U poslednjih 10 sekundi zabeleženo više od 10 otkucaja srca
+    o Suma količine mokrenja u poslednjih 12 sati je manja od 100ml
 **/
+rule "urgent dialysis"
+agenda-group "monitoring"
+    when
+        $monitoringPatient: MonitoringPatient(sickness != null && sickness.name == "Chronic kidney disease")
+        List(size > 10) from collect (
+            HeartBeat(patient == $monitoringPatient) over window:time(10s)
+        )
+        Number(doubleValue < 100) from accumulate (
+            Urination(patient == $monitoringPatient, $a: amount) over window:time(12h),
+            sum($a)
+        )
+    then
+        String message = "\nUrgent dialysis for " + $monitoringPatient.getPatient().getName();
+        System.out.println(message);
+//        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
+end
