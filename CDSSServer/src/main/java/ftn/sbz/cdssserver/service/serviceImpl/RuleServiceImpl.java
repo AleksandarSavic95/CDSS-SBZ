@@ -18,6 +18,7 @@ import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class RuleServiceImpl implements RuleService {
                 results = kieSession.getQueryResults("getDiagnosis", 1);
                 if (! results.iterator().hasNext()) {
                     System.out.println("\nNO DIAGNOSIS!\n");
-                    return null;
+                    return new PossibleSickness();
                 }
             }
         }
@@ -112,7 +113,7 @@ public class RuleServiceImpl implements RuleService {
             return (List<PossibleSickness>) results.iterator().next().get("$possibleSicknesses");
 
         System.out.println("iterator was empty!");
-        return null;
+        return new ArrayList<>();
     }
 
     private boolean reasonPossibleSicknesses(long id, DiagnosisDto diagnosisDto) {
