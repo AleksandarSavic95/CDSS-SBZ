@@ -6,10 +6,7 @@ import org.kie.api.definition.type.Role;
 import org.kie.api.definition.type.Timestamp;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Role(Role.Type.EVENT)
 @Timestamp("timestamp")
@@ -38,14 +35,14 @@ public class Treatment {
     @JoinTable(name = "treatment_medicine",
             joinColumns = @JoinColumn(name = "treatment_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "medicine_id", referencedColumnName = "id"))
-    private Set<Medicine> medicines;
+    private List<Medicine> medicines;
 
     public Treatment() {
         this.timestamp = new Date();
-        this.medicines = new HashSet<>();
+        this.medicines = new ArrayList<>();
     }
 
-    public Treatment(Date timestamp, Doctor doctor, Patient patient, Sickness sickness, Set<Medicine> medicines) {
+    public Treatment(Date timestamp, Doctor doctor, Patient patient, Sickness sickness, List<Medicine> medicines) {
         this.timestamp = timestamp;
         this.doctor = doctor;
         this.patient = patient;
@@ -93,12 +90,17 @@ public class Treatment {
         this.sickness = sickness;
     }
 
-    public Set<Medicine> getMedicines() {
+    public List<Medicine> getMedicines() {
         return medicines;
     }
 
-    public void setMedicines(Set<Medicine> medicines) {
+    public void setMedicines(List<Medicine> medicines) {
         this.medicines = medicines;
+    }
+
+    // called from rules!
+    public boolean hasAnalgetics() {
+        return this.medicines.stream().anyMatch(medicine -> medicine.getType().name().equals("ANALGETIC"));
     }
 
     @Override

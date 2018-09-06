@@ -45,6 +45,10 @@ public class TreatmentServiceImpl implements TreatmentService {
     public Treatment create(Treatment treatment) {
         treatment.setTimestamp(new Date());
         treatment.setDoctor((Doctor) userRepository.findByUsername(treatment.getDoctor().getUsername()));
+        System.out.printf("<<< Doctor %s creating treatment for %s with %d analgetics.\n",
+                treatment.getDoctor().getUsername(),
+                treatment.getSickness().getName(),
+                treatment.getMedicines().stream().filter(medicine -> medicine.getType().name().equals("ANALGETIC")).count());
         return treatmentRepository.save(treatment);
     }
 

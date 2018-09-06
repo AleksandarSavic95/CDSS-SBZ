@@ -44,7 +44,12 @@ public class ReportsServiceImpl implements ReportsService {
 
     @Override
     public List<Patient> getAddicts() {
-        return null;
+        initializeSession();
+        QueryResults queryResults = kieSession.getQueryResults("addicts");
+
+        ArrayList<Patient> resultsList = new ArrayList<>();
+        queryResults.iterator().forEachRemaining(queryResult -> resultsList.add((Patient) queryResult.get("$p")));
+        return resultsList;
     }
 
     @Override
