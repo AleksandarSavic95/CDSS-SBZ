@@ -7,7 +7,6 @@ import ftn.sbz.cdssserver.model.monitoring.Urination;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 
-import java.util.Date;
 
 public class MonitoringTask implements Runnable {
 
@@ -20,37 +19,30 @@ public class MonitoringTask implements Runnable {
 
     public MonitoringTask() {
         this.isMonitored = true;
-        System.out.println("MT() CREATED at" + new Date());
     }
 
     @Override
     public void run() {
-        System.out.println("RUN at" + new Date());
-
-        System.out.println("\npatient: " + patient.getPatient().getName());
-        System.out.println("\nsickness: " + patient.getSickness().getName());
-        System.out.println("inserting patient into kieSession..");
-
         OxygenLevel oxygen = new OxygenLevel(patient, 60, false);
         patient.setOxygenLevel(oxygen);
 
+        System.out.printf("Inserting patient into kieSession... %s - %s\n", patient.getPatient().getName(), patient.getSickness().getName());
         this.patientHandle = kieSession.insert(patient);
-        System.out.println("LOOP..... uncomment when not testing");
+
         while(this.isMonitored) {
-            System.out.printf("Patient %s is being monitored..\n", patient.getPatient().getName());
+            System.out.printf("Patient %s is being monitored...\n", patient.getPatient().getName());
+            System.out.println("\nUNCOMMENT SOCKET MESSAGING TEMPLATE!\n");
+            fireRules();
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("FIRING RULES....");
-            fireRules();
         }
         System.out.printf("Patient %s released from monitoring.\n", patient.getPatient().getName());
     }
 
     private int fireRules() {
-        System.out.println("INTENSIVE CARE SERVICE FIRE_RULES()");
         kieSession.getAgenda().getAgendaGroup("monitoring").setFocus();
         return kieSession.fireAllRules();
     }

@@ -34,7 +34,7 @@ public class CdssserverApplicationTests {
     @Autowired
     private static SimpMessagingTemplate template;
 
-    private static MonitoringTask monitoringTask;
+    private static MonitoringTask task;
 
     private static KieSession kieSession;
 
@@ -61,11 +61,10 @@ public class CdssserverApplicationTests {
         monitoringPatient.setOxygenLevel(oxygen);
 
         // create a task (assignment) for monitoring the patient
-        MonitoringTask task = new MonitoringTask();
+        task = new MonitoringTask();
         task.setKieSession(kieSession);
         task.setPatient(monitoringPatient);
         task.setPatientHandle(kieSession.insert(task.getPatient()));
-        monitoringTask = task; // !!! // TODO: COMPLETELY REPLACE `monitoringTask` with `task`!
     }
 
 	@Test
@@ -74,28 +73,28 @@ public class CdssserverApplicationTests {
         pseudoClock.advanceTime(16, TimeUnit.MINUTES);
 
         // drop level below 70. No growth, since the initial value is 90
-        int rulesFired = monitoringTask.changeOxygenLevel(60);
+        int rulesFired = task.changeOxygenLevel(60);
 		assertEquals(1, rulesFired);
 
 		// all levels below 70
 		rulesFired = 0;
 		for (int i = 10; i > 0; i--) {
-			rulesFired += monitoringTask.changeOxygenLevel(6 * i);
+			rulesFired += task.changeOxygenLevel(6 * i);
 		}
 		assertEquals(10, rulesFired);
 
 		// oxygen level is rising
-		rulesFired = monitoringTask.changeOxygenLevel(65);
+		rulesFired = task.changeOxygenLevel(65);
 		assertEquals(0, rulesFired);
 
 		// oxygen level droped, but a recent (15m) rise is present
-		rulesFired = monitoringTask.changeOxygenLevel(60);
+		rulesFired = task.changeOxygenLevel(60);
 		assertEquals(0, rulesFired);
 
 		// 15 minutes later
 		pseudoClock.advanceTime(15, TimeUnit.MINUTES);
 
-		rulesFired = monitoringTask.changeOxygenLevel(50);
+		rulesFired = task.changeOxygenLevel(50);
 		assertEquals(1, rulesFired);
 	}
 
@@ -105,16 +104,16 @@ public class CdssserverApplicationTests {
         // 24 heartbeats in 10s
         int rulesFired = 0;
         for (int i = 0; i < 24; i++) {
-            rulesFired += monitoringTask.addHeartBeat();
+            rulesFired += task.addHeartBeat();
         }
         assertEquals(0, rulesFired);
 
         // 25 heartbeats in 10s
-        rulesFired = monitoringTask.addHeartBeat();
+        rulesFired = task.addHeartBeat();
         assertEquals(0, rulesFired);
 
         // > 25 heartbeats in 10s
-        rulesFired = monitoringTask.addHeartBeat();
+        rulesFired = task.addHeartBeat();
         assertEquals(1, rulesFired);
 
         // 10 seconds later
@@ -122,7 +121,7 @@ public class CdssserverApplicationTests {
         pseudoClock.advanceTime(10, TimeUnit.SECONDS);
 
         // < 25 heart beats in 10s
-        rulesFired = monitoringTask.addHeartBeat();
+        rulesFired = task.addHeartBeat();
         assertEquals(0, rulesFired);
     }
 
@@ -132,11 +131,11 @@ public class CdssserverApplicationTests {
 
         // patient suffers from Chronic kidney disease
         monitoringPatient.setSickness(new Sickness("Chronic kidney disease"));
-        kieSession.update(monitoringTask.getPatientHandle(), monitoringPatient);
+        kieSession.update(task.getPatientHandle(), monitoringPatient);
 
         // Urination of over 100ml, but 12+h ago
-        monitoringTask.addUrination(200);
-        rulesFired = monitoringTask.addUrination(300);
+        task.addUrination(200);
+        rulesFired = task.addUrination(300);
         assertEquals(0, rulesFired);
 
         pseudoClock.advanceTime(12, TimeUnit.HOURS);
@@ -144,25 +143,25 @@ public class CdssserverApplicationTests {
         // 10 (not more than 10) hear beats
         rulesFired = 0;
         for (int i = 0; i < 10; i++) {
-            rulesFired += monitoringTask.addHeartBeat();
+            rulesFired += task.addHeartBeat();
         }
         assertEquals(0, rulesFired);
 
         // 10+ HeartBeats and no Urination
-        rulesFired = monitoringTask.addHeartBeat();
+        rulesFired = task.addHeartBeat();
         assertEquals(1, rulesFired);
 
         // Still not-enough Urination
-        rulesFired = monitoringTask.addUrination(99);
+        rulesFired = task.addUrination(99);
         assertEquals(1, rulesFired);
 
         // 10 seconds later..
         pseudoClock.advanceTime(10, TimeUnit.SECONDS);
 
         // 102ml Urination occurred, but not enough HeartBeats
-        monitoringTask.addHeartBeat();
-        monitoringTask.addHeartBeat();
-        rulesFired = monitoringTask.addUrination(102);
+        task.addHeartBeat();
+        task.addHeartBeat();
+        rulesFired = task.addUrination(102);
         assertEquals(0, rulesFired);
     }
 }

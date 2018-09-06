@@ -33,7 +33,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         this.kieSession = kieSession;
         this.taskExecutor = taskExecutor;
         this.template = template;
-        kieSession.setGlobal("messagingTemplate", template); // !!!
+        kieSession.setGlobal("messagingTemplate", template);
     }
 
     @Override
@@ -43,10 +43,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     @Override
     public String putPatientToIntensiveCare(Patient patient, Sickness sickness) {
-        System.out.println("putPatientToIntensiveCare B4");
         startMonitoring(patient, sickness);
-        System.out.println("putPatientToIntensiveCare AFTER");
-
         return "Success!";
     }
 
@@ -58,12 +55,6 @@ public class MonitoringServiceImpl implements MonitoringService {
 
         task.setMonitored(false); // !
         return "Success!";
-    }
-
-    @Override
-    public void notifyDoctor(String message) {
-        System.out.println("INTENSIVE CARE SERVICE NOTIFY DOCTOR");
-        template.convertAndSend("/monitoring", message);
     }
 
     private void startMonitoring(Patient patient, Sickness sickness) {

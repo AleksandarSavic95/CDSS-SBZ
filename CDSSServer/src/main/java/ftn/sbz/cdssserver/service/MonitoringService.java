@@ -12,6 +12,4 @@ public interface MonitoringService {
     String putPatientToIntensiveCare(Patient patient, Sickness sickness);
 
     String releasePatientFromIntensiveCare(long medicalCardNumber);
-
-    void notifyDoctor(String message);
 }
