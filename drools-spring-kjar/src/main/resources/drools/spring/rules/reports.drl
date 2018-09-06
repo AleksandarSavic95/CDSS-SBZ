@@ -1,0 +1,48 @@
+package drools.spring.rules;
+dialect  "mvel"
+
+import ftn.sbz.cdssserver.model.Patient;
+import ftn.sbz.cdssserver.model.Treatment;
+import ftn.sbz.cdssserver.model.sickness.Sickness;
+//import ftn.sbz.cdssserver.model.
+//import ftn.sbz.cdssserver.model.
+//import ftn.sbz.cdssserver.model.
+
+import java.util.List;
+
+/**
+● Spisak pacijenata sa mogući hroničnim oboljenjima:
+    o Pacijent je u poslednje dve godine više od 5 puta lečen od iste bolesti
+    o Bolest nije prehlada ili groznica
+**/
+query chronicallySickPatients()
+    $p: Patient() // over window:time(10s)
+    $s: Sickness($name: name) over window:time(10s)
+    List(size > 5) from collect (
+        Treatment(patient == $p, sickness == $s, sickness.name != "Cold", sickness.name != "Fever")
+        over window:time(730)
+    )
+    //$chronicallySickPatients: List() from collect($p)
+end
+
+
+/**
+● Spisak mogućih zavisnika:
+    o Pacijentu su u poslednjih 6 meseci barem 6 puta prepisani analgetici od strane 3 ili više različita
+lekara
+**/
+//query addicts()
+//    $p: Patient()
+//    $m: List() from collect (Medicine(type.name == "ANALGETIC"))
+//    $treatments: List(size >= 6) from accumulate (
+//        $t: Treatment(patient == $p, $meds: medicines)
+//        List(size == 0) from accumulate ()
+//        over window:time(180d),
+//        collectList($t)
+//    )
+/**
+● Spisak pacijenta sa oslabljenim imunitetom:
+    o Pacijent je lečen više od 10 puta u poslednjih 12 meseci od barem 2 različite bolesti za koje su mu
+prepisani antibiotici
+    o Pacijent u poslednjih 12 meseci nije bolovao od bolesti za koju mu nisu bili prepisani antibiotic
+**/
