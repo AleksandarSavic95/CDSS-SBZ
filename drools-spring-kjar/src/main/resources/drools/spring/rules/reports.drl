@@ -16,7 +16,7 @@ import java.util.HashSet;
     o Bolest nije prehlada ili groznica
 **/
 query chronicallySickPatients()
-    $p: Patient() // over window:time(10s)
+    $p: Patient() over window:time(5s)
     $s: Sickness($name: name) over window:time(10s)
     List(size > 5) from collect (
         Treatment(patient == $p, sickness == $s, sickness.name != "Cold", sickness.name != "Fever")
@@ -31,7 +31,7 @@ end
 lekara
 **/
 query addicts()
-    $p: Patient()
+    $p: Patient() over window:time(5s)
     $treatments: List(size >= 6) from collect (
         Treatment(patient == $p, this.hasAnalgetics()) over window:time(180d)
     )
@@ -51,7 +51,7 @@ prepisani antibiotici
     ooo TJ prepisani su mu antibiotici za sve bolesti od kojih je bolovao u posljednjih 12 mjeseci
 **/
 query weakImmunityPatients()
-    $p: Patient()
+    $p: Patient() over window:time(5s)
     $antibioticsTreatments: List(size > 10) from collect (
         $t: Treatment(patient == $p, this.hasAntibiotics()) over window:time(365d)
     )

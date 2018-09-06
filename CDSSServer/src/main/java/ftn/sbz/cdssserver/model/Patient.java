@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ftn.sbz.cdssserver.model.medicine.Ingredient;
 import ftn.sbz.cdssserver.model.medicine.Medicine;
 import ftn.sbz.cdssserver.model.sickness.Sickness;
+import org.kie.api.definition.type.Role;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Role(Role.Type.EVENT)
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
