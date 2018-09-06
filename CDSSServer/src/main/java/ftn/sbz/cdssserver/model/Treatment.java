@@ -102,6 +102,10 @@ public class Treatment {
     public boolean hasAnalgetics() {
         return this.medicines.stream().anyMatch(medicine -> medicine.getType().name().equals("ANALGETIC"));
     }
+    // called from rules!
+    public boolean hasAntibiotics() {
+        return this.medicines.stream().anyMatch(medicine -> medicine.getType().name().equals("ANTIBIOTIC"));
+    }
 
     @Override
     public String toString() {
