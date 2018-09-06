@@ -49,5 +49,21 @@ end
 ● Spisak pacijenta sa oslabljenim imunitetom:
     o Pacijent je lečen više od 10 puta u poslednjih 12 meseci od barem 2 različite bolesti za koje su mu
 prepisani antibiotici
-    o Pacijent u poslednjih 12 meseci nije bolovao od bolesti za koju mu nisu bili prepisani antibiotic
+    o Pacijent u poslednjih 12 meseci nije bolovao od bolesti za koju mu nisu bili prepisani antibiotici
+    ooo TJ prepisani su mu antibiotici za sve bolesti od kojih je bolovao u posljednjih 12 mjeseci
 **/
+query weakImmunityPatients()
+    $p: Patient()
+    $antibioticsTreatments: List(size > 10) from collect (
+        $t: Treatment(patient == $p, this.hasAntibiotics()) over window:time(365d)
+    )
+    $sicknessesWithAntibiotics: Set(size >= 2) from accumulate(
+        Treatment($sickness: sickness) from $antibioticsTreatments,
+        init(Set sicknessSet = new HashSet();),
+        action(sicknessSet.add($sickness);),
+        result(sicknessSet)
+    )
+    not (
+        Treatment(patient == $p, this.hasAntibiotics() == false) over window:time(365d)
+    )
+end
