@@ -1,24 +1,29 @@
 package ftn.sbz.cdssserver.service.serviceImpl;
 
+import ftn.sbz.cdssserver.model.Doctor;
 import ftn.sbz.cdssserver.model.Patient;
 import ftn.sbz.cdssserver.model.Treatment;
 import ftn.sbz.cdssserver.repository.TreatmentRepository;
+import ftn.sbz.cdssserver.repository.UserRepository;
 import ftn.sbz.cdssserver.service.TreatmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class TreatmentServiceImpl implements TreatmentService {
 
     private final TreatmentRepository treatmentRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TreatmentServiceImpl(TreatmentRepository treatmentRepository) {
+    public TreatmentServiceImpl(TreatmentRepository treatmentRepository, UserRepository userRepository) {
         this.treatmentRepository = treatmentRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Treatment> findAll() {
@@ -38,6 +43,8 @@ public class TreatmentServiceImpl implements TreatmentService {
     }
 
     public Treatment create(Treatment treatment) {
+        treatment.setTimestamp(new Date());
+        treatment.setDoctor((Doctor) userRepository.findByUsername(treatment.getDoctor().getUsername()));
         return treatmentRepository.save(treatment);
     }
 
