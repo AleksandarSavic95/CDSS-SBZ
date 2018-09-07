@@ -11,7 +11,7 @@ agenda-group "temperature"
     when
         $ruleService: RuleService()
         DiagnosisDto(temperature > 38)
-        not Symptom(name == "temperature over 38"  )
+        not Symptom(name == "temperature over 38") over window:time(10s)
     then
         $ruleService.insertSymptom("temperature over 38");
         System.out.println("temperature over 38");
@@ -23,7 +23,7 @@ agenda-group "temperature"
     when
         $ruleService: RuleService()
         DiagnosisDto(temperature >= 40 && temperature <= 41)
-        not Symptom(name == "temperature between 40 and 41"  )
+        not Symptom(name == "temperature between 40 and 41") over window:time(10s)
     then
         $ruleService.insertSymptom("temperature between 40 and 41");
         System.out.println("temperature between 40 and 41");
