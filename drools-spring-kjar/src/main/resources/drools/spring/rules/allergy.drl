@@ -18,24 +18,4 @@ query checkAllergies(Patient p)
         $ings: Ingredient(this memberOf p.getAllergensIngredients()),
         collectList($ings)
     )
-    // eval($medAllergy.size() + $ingrAllergy.size() > 0)
 end
-
-// F F F F F F F F F F F F F F F F F F
-rule "check allergies"
-    agenda-group "allergies"
-    when
-        $p: Patient($medicines: allergensMedicines, $ingredients: allergensIngredients)
-        $medAllergy: List() from accumulate (
-            $m: Medicine(this memberOf $medicines),
-            collectList($m)
-        )
-        $ingAllergy: List() from accumulate (
-            $i: Ingredient(this memberOf $ingredients),
-            collectList($i)
-        )
-        eval($medAllergy.size() + $ingAllergy.size() > 0)
-    then
-        insert(new PossibleAllergies($medAllergy, $ingAllergy));
-end
-// F F F F F F F F F F F F F F F F F F

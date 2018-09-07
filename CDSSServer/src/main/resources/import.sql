@@ -48,13 +48,14 @@ INSERT INTO sickness (id, name, sickness_group) VALUES (7, 'Chronic kidney disea
 INSERT INTO sickness (id, name, sickness_group) VALUES (8, 'Acute kidney disease', 3);
 INSERT INTO sickness (id, name, sickness_group) VALUES (9, 'High blood pressure', 4);
 INSERT INTO sickness (id, name, sickness_group) VALUES (10, 'Recovering from surgery', 4);
--- --
+-- -- SYMPTOMS -- --
+-- Cold
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (1, 1);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (1, 2);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (1, 3);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (1, 4);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (1, 5);
-
+-- Fever
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 1);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 2);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 3);
@@ -62,7 +63,7 @@ INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 4);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 5);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 6);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (2, 7);
-
+-- Tonsillitis
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 2);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 3);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 7);
@@ -71,7 +72,7 @@ INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 9);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 10);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 11);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (3, 12);
-
+-- Sinus infection
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 2);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 3);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 5);
@@ -79,14 +80,14 @@ INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 6);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 12);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 13);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (4, 14);
-
+-- Hypertension
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (5, 15);
-
+-- Diabetes
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (6, 16);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (6, 17);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (6, 18);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (6, 19);
-
+-- Chronic kidney disease
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (7, 18);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (7, 20);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (7, 21);
@@ -94,7 +95,7 @@ INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (7, 22);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (7, 23);
 INSERT INTO sickness_specific_symptom (sickness_id, specific_id) VALUES (7, 24);
 INSERT INTO sickness_specific_symptom (sickness_id, specific_id) VALUES (7, 25);
-
+-- Acute kidney disease
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (8, 18);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (8, 21);
 INSERT INTO sickness_general_symptom (sickness_id, general_id) VALUES (8, 22);
@@ -130,14 +131,15 @@ INSERT INTO allergen_medicine (patient_id, medicine_id) VALUES (2, 2);
 -- --
 INSERT INTO allergen_ingredient (patient_id, ingredient_id) VALUES (2, 1);
 INSERT INTO allergen_ingredient (patient_id, ingredient_id) VALUES (3, 1);
+
 -- -- -- TREATMENTS -- -- --
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (1, '2018-06-14 19:44:52', 5, 2, 1);
-INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (2, '2018-06-14 19:44:52', 2, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (1, '2018-06-14 19:44:52', 2, 2, 1);
+INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (2, '2018-06-14 19:44:52', 5, 2, 1);
+-- patient[id=1] had 11 cases of highBloodPressure[id=9] in the past 6 months (symptom[id=15] for HYPERTENSION!)
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (3, '2018-06-14 19:44:52', 9, 3, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (4, '2018-06-14 19:44:52', 9, 3, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (5, '2018-06-14 19:44:52', 9, 4, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (6, '2018-06-14 19:44:52', 9, 4, 1);
--- patient[id=1] had 7 cases of highBloodPressure[id=9]
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (7, '2018-09-04 11:41:52', 9, 2, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (8, '2018-09-04 11:42:52', 9, 2, 1);
 INSERT INTO treatment (id, timestamp, sickness_id, doctor_id, patient_id) VALUES (9, '2018-09-04 11:43:52', 9, 2, 1);

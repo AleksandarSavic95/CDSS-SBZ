@@ -1,9 +1,11 @@
 package ftn.sbz.cdssserver.model.dto;
 
 import ftn.sbz.cdssserver.model.sickness.Symptom;
+import org.kie.api.definition.type.Role;
 
 import java.util.List;
 
+@Role(Role.Type.EVENT)
 public class DiagnosisDto {
 
     private List<Symptom> symptoms;

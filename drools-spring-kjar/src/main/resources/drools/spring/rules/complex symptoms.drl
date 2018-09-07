@@ -14,14 +14,15 @@ rule "patient had cold or fever in the past 60 days"
 salience 100
 agenda-group "diagnosis"
     when
+        $patient: Patient() over window:time(3s)
         $ruleService: RuleService()
         $count: Number(intValue >= 1) from accumulate(
-            $t: Treatment( sickness.name == "Cold" || sickness.name == "Fever")
+            $t: Treatment( sickness.name == "Cold" || sickness.name == "Fever", patient == $patient)
             over window:time(60d),
             count(1)
         )
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "Cold or Fever in the last 60 days") over window:time(10s)
+        not Symptom(name == "Cold or Fever in the last 60 days") over window:time(3s)
     then
         $ruleService.insertSymptom("Cold or Fever in the last 60 days");
         System.out.println("Cold or Fever in the last 60 days");
@@ -31,14 +32,15 @@ rule "patient had high blood pressure 10+ times in the last 6 months"
 salience 100
 agenda-group "diagnosis"
     when
+        $patient: Patient() over window:time(3s)
         $ruleService: RuleService()
         $count: Number(intValue >= 10) from accumulate(
-            $t: Treatment(sickness.name == "High blood pressure")
+            $t: Treatment(sickness.name == "High blood pressure", patient == $patient)
             over window:time(180d),
             count(1)
         )
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "10 cases of high blood pressure in the last 6 months") over window:time(10s)
+        not Symptom(name == "10 cases of high blood pressure in the last 6 months") over window:time(3s)
     then
         $ruleService.insertSymptom("10 cases of high blood pressure in the last 6 months");
         System.out.println("10 cases of high blood pressure in the last 6 months");
@@ -48,14 +50,15 @@ rule "patient has hypertension for 6+ months"
 salience 100
 agenda-group "diagnosis"
     when
+        $patient: Patient() over window:time(3s)
         $ruleService: RuleService()
         Date( $time: time ) from new Date()
         $count: Number(intValue >= 1) from accumulate(
-            $t: Treatment( timestamp before[180d] $time, sickness.name == "Hypertension"),
+            $t: Treatment( timestamp before[180d] $time, sickness.name == "Hypertension", patient == $patient),
             count(1)
         )
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "Over 6 months hypertension") over window:time(10s)
+        not Symptom(name == "Over 6 months hypertension") over window:time(3s)
     then
         $ruleService.insertSymptom("Over 6 months hypertension");
         System.out.println("Over 6 months hypertension");
@@ -66,13 +69,13 @@ salience 100
 agenda-group "diagnosis"
     when
         $ruleService: RuleService()
-        $p: Patient($s: sickFrom)
+        $p: Patient($s: sickFrom) over window:time(3s) //  Should  window:time be here ? ? ? ? ??? ???? ?????? ???????
         Number(intValue >= 1) from accumulate(
             Sickness(name == "Diabetes") from $s,
             count(1)
         )
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "Diabetes") over window:time(10s)
+        not Symptom(name == "Diabetes") over window:time(3s)
     then
         $ruleService.insertSymptom("Diabetes");
         System.out.println("Diabetes");
@@ -83,13 +86,13 @@ salience 100
 agenda-group "diagnosis"
     when
         $ruleService: RuleService()
-        $p: Patient($s: sickFrom)
+        $p: Patient($s: sickFrom) over window:time(3s) //  Should  window:time be here ? ? ? ? ??? ???? ?????? ???????
         Number(intValue >= 1) from accumulate(
             Sickness(name == "Recovering from surgery") from $s,
             count(1)
         )
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "Surgery recovery") over window:time(10s)
+        not Symptom(name == "Surgery recovery") over window:time(3s)
     then
         $ruleService.insertSymptom("Surgery recovery");
         System.out.println("Surgery recovery");
@@ -100,18 +103,19 @@ rule "patient had high body temperature in the last 14 days"
 salience 100
 agenda-group "diagnosis"
     when
+        $patient: Patient() over window:time(3s)
         $ruleService: RuleService()
         $list: List(size > 0) from accumulate(
             // TODO: Check that treatment belongs to right patient
             // TODO: Put @Expires on Patient class, so that multiple patients can be diagnosed within one  Kie(Doctor)Session
-            $t: Treatment($sickness: sickness) // sickness not needed ?!?!?!?
+            $t: Treatment($sickness: sickness, patient == $patient) // sickness not needed ?!?!?!?
             over window:time(14d),
             collectList($t)
         )
         $treatment: Treatment($genSymptoms: sickness.generalSymptoms) from $list
         $sym: Symptom(name == "temperature over 38" || name == "temperature between 40 and 41") from $genSymptoms
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "Last 14 days with fever") over window:time(10s)
+        not Symptom(name == "Last 14 days with fever") over window:time(3s)
     then
         $ruleService.insertSymptom("Last 14 days with fever");
         System.out.println("Last 14 days with fever");
@@ -121,16 +125,17 @@ rule "patient took antibiotics in the past 21 days"
 salience 100
 agenda-group "diagnosis"
     when
+        $patient: Patient() over window:time(3s)
         $ruleService: RuleService()
         $list: List(size > 0) from accumulate(
-            $t: Treatment($sickness: sickness)
+            $t: Treatment($sickness: sickness, patient == $patient)
             over window:time(21d),
             collectList($t)
         )
         $treatment: Treatment($medicine: medicines) from $list
         $m: Medicine(type.name == "ANTIBIOTIC") from $medicine
         // TODO: check if this "not" check can be safely replaced with no-loop or with nothing :D
-        not Symptom(name == "Last 21 days antibiotics" ) over window:time(10s)
+        not Symptom(name == "Last 21 days antibiotics" ) over window:time(3s)
     then
         $ruleService.insertSymptom("Last 21 days antibiotics");
         System.out.println("Last 21 days antibiotics");

@@ -13,7 +13,7 @@ import java.util.Date;
 /** Get newest PossibleSicknesses and find the most probable one **/
 query getDiagnosis(int groupNumber) // TODO: try sending  sicknessGroup  as parameter to this query ! Then... see below
 // Then choose from one of the 3 diagnosis (most or least dangerous) and unite all 3 lists if returning a list :)
-    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
+    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(3s))
     $highestPercentage: Number() from accumulate (
         PossibleSickness(
             sickness.sicknessGroup == groupNumber, $percentage: percentage
@@ -34,7 +34,7 @@ query getDiagnosis(int groupNumber) // TODO: try sending  sicknessGroup  as para
 end
 
 query getPossibleSicknesses()
-    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(10s))
+    $possibleSicknesses: List() from collect (PossibleSickness() over window:time(3s))
 end
 
 
@@ -44,7 +44,7 @@ rule "diagnosis of Group 1 sicknesses"
 salience 50
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        $symptoms: List() from collect (Symptom() over window:time(3s)) // A A A A
         // $symptoms: List() from collect (Symptom()) // F F F F F F F F
 
         $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
@@ -63,7 +63,7 @@ rule "diagnosis of Group 2 sicknesses"
 salience 40
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        $symptoms: List() from collect (Symptom() over window:time(3s)) // A A A A
         // $symptoms: List() from collect (Symptom()) // F F F F F F F F
         $s: Sickness(sicknessGroup == 2, $gen: generalSymptoms)
         List(size == $gen.size) from collect (
@@ -80,7 +80,7 @@ rule "detect possible illnesses from group 3"
 salience 30
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect (Symptom() over window:time(10s)) // A A A A
+        $symptoms: List() from collect (Symptom() over window:time(3s)) // A A A A
         // $symptoms: List() from collect (Symptom()) // F F F F F F F F
         $s: Sickness(sicknessGroup == 3, $gen: generalSymptoms, $spec: specificSymptoms)
         List($numGen: size, size >= 2) from collect (
@@ -114,9 +114,9 @@ salience 3
 agenda-group "diagnosis"
 when
     Date( $time: time ) from new Date()
-    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(10s)) // A A A A
+    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(3s)) // A A A A
     // $possibleSicknesses: List() from collect(PossibleSickness()) // F F F F F F F F F
-    $sicknesses: List() from collect(Sickness() over window:time(10s))
+    $sicknesses: List() from collect(Sickness() over window:time(3s))
 then
     System.out.println("\n======= " + $possibleSicknesses.size() + " RECENT possible Sicknesses!!\n");
     System.out.println("\n======= " + $sicknesses.size() + " RECENT Sicknesses!!\n");

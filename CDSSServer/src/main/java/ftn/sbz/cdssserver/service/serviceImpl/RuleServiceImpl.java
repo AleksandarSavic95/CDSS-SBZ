@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -110,8 +111,12 @@ public class RuleServiceImpl implements RuleService {
             return null;
         QueryResults results = kieSession.getQueryResults("getPossibleSicknesses");
 
-        if (results.iterator().hasNext()) // POSSIBLE SICKNESSES
-            return (List<PossibleSickness>) results.iterator().next().get("$possibleSicknesses");
+        if (results.iterator().hasNext()) { // POSSIBLE SICKNESSES
+            List<PossibleSickness> resultList = (List<PossibleSickness>) results.iterator().next()
+                    .get("$possibleSicknesses");
+            resultList.sort(Comparator.comparingDouble(PossibleSickness::getPercentage).reversed());
+            return resultList;
+        }
 
         System.out.println("iterator was empty!");
         return new ArrayList<>();
