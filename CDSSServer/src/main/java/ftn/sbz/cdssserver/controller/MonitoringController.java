@@ -35,15 +35,21 @@ public class MonitoringController {
         System.out.println("SICKNESS: " + sickness);
         Patient patient = patientService.findById(id);
         if (patient == null)
-            return new ResponseEntity("Patient not found!", HttpStatus.OK);
-        String responseMessage = monitoringService.putPatientToIntensiveCare(patient, sickness);
-        return new ResponseEntity(responseMessage, HttpStatus.OK);
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        boolean success = monitoringService.putPatientToIntensiveCare(patient, sickness);
+        if (! success) {
+            new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DOCTOR')")
     @PutMapping("/patients/{id}")
     public ResponseEntity releaseFromIntensiveCare(@PathVariable long id) {
-        String responseMessage = monitoringService.releasePatientFromIntensiveCare(id);
-        return new ResponseEntity(responseMessage, HttpStatus.OK);
+        boolean success = monitoringService.releasePatientFromIntensiveCare(id);
+        if (! success) {
+            new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

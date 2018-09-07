@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class MonitoringServiceImpl implements MonitoringService {
@@ -37,31 +39,38 @@ public class MonitoringServiceImpl implements MonitoringService {
     }
 
     @Override
-    public Collection<MonitoringTask> getAllOnIntensiveCare() {
-        return monitoringTasksMap.values();
+    public Collection<MonitoringPatient> getAllOnIntensiveCare() {
+        return monitoringTasksMap.values().stream().map(MonitoringTask::getPatient).collect(Collectors.toList());
     }
 
     @Override
-    public String putPatientToIntensiveCare(Patient patient, Sickness sickness) {
-        startMonitoring(patient, sickness);
-        return "Success!";
+    public boolean putPatientToIntensiveCare(Patient patient, Sickness sickness) {
+        return startMonitoring(patient, sickness);
     }
 
     @Override
-    public String releasePatientFromIntensiveCare(long patientId) {
-        MonitoringTask task = monitoringTasksMap.get(patientId);
+    public boolean releasePatientFromIntensiveCare(long patientId) {
+        MonitoringTask task = monitoringTasksMap.remove(patientId);
         if (task == null)
-            return "Patient not on monitoring or does not exist!";
+            return false;
 
         task.setMonitored(false); // !
-        return "Success!";
+        return true;
     }
 
-    private void startMonitoring(Patient patient, Sickness sickness) {
+    private boolean startMonitoring(Patient patient, Sickness sickness) {
         MonitoringTask task = new MonitoringTask();
         task.setPatient(new MonitoringPatient(patient, sickness));
         task.setKieSession(kieSession);
         monitoringTasksMap.put(patient.getId(), task);
-        taskExecutor.execute(task);
+
+        try {
+            taskExecutor.execute(task);
+        }
+        catch (RejectedExecutionException rex) {
+            rex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

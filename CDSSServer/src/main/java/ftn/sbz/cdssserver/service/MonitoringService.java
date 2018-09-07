@@ -1,15 +1,15 @@
 package ftn.sbz.cdssserver.service;
 
 import ftn.sbz.cdssserver.model.Patient;
+import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.model.sickness.Sickness;
-import ftn.sbz.cdssserver.monitoring.MonitoringTask;
 
 import java.util.Collection;
 
 public interface MonitoringService {
-    Collection<MonitoringTask> getAllOnIntensiveCare();
+    Collection<MonitoringPatient> getAllOnIntensiveCare();
 
-    String putPatientToIntensiveCare(Patient patient, Sickness sickness);
+    boolean putPatientToIntensiveCare(Patient patient, Sickness sickness);
 
-    String releasePatientFromIntensiveCare(long medicalCardNumber);
+    boolean releasePatientFromIntensiveCare(long medicalCardNumber);
 }

@@ -1,11 +1,13 @@
 package ftn.sbz.cdssserver.model.monitoring;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.kie.api.definition.type.Expires;
 import org.kie.api.definition.type.Role;
 
 @Role(Role.Type.EVENT)
 @Expires("15m")
 public class OxygenLevel {
+    @JsonIgnore
     private MonitoringPatient patient;
     private double level;
     private boolean growth;
