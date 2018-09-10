@@ -10,7 +10,8 @@ import ftn.sbz.cdssserver.model.monitoring.Urination;
 import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-global SimpMessagingTemplate messagingTemplate;
+//global SimpMessagingTemplate messagingTemplate;
+global MonitoringService monitoringService;
 
 rule "oxygen problems"
 agenda-group "monitoring"
@@ -21,6 +22,7 @@ agenda-group "monitoring"
     then
         String message = "\nOxy problems for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
+        monitoringService.sendMessage(message);
 //        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
 end
 
@@ -34,6 +36,7 @@ agenda-group "monitoring"
     then
         String message = "\nHeart problems for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
+        monitoringService.sendMessage(message);
 //        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
 end
 
@@ -52,5 +55,6 @@ agenda-group "monitoring"
     then
         String message = "\nUrgent dialysis for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
+        monitoringService.sendMessage(message);
 //        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
 end

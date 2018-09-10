@@ -5,11 +5,10 @@ import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.model.sickness.Sickness;
 import ftn.sbz.cdssserver.monitoring.MonitoringTask;
 import ftn.sbz.cdssserver.service.MonitoringService;
-import ftn.sbz.cdssserver.service.PatientService;
+import ftn.sbz.cdssserver.service.NotificationService;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,16 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private final TaskExecutor taskExecutor;
 
+    private final NotificationService notificationService;
+
     public static HashMap<Long, MonitoringTask> monitoringTasksMap = new HashMap<>();
 
     @Autowired
-    public MonitoringServiceImpl(@Qualifier("monitoring") KieSession kieSession, @Qualifier("monitoringTaskExecutor") TaskExecutor taskExecutor, SimpMessagingTemplate template) {
+    public MonitoringServiceImpl(@Qualifier("monitoring") KieSession kieSession, @Qualifier("monitoringTaskExecutor") TaskExecutor taskExecutor, SimpMessagingTemplate template, NotificationService notificationService) {
         this.kieSession = kieSession;
         this.taskExecutor = taskExecutor;
         this.template = template;
+        this.notificationService = notificationService;
         kieSession.setGlobal("messagingTemplate", template);
     }
 
@@ -56,6 +58,12 @@ public class MonitoringServiceImpl implements MonitoringService {
 
         task.setMonitored(false); // !
         return true;
+    }
+
+    // called from rules!
+    @Override
+    public void sendMessage(String message) {
+        notificationService.sendWarning(message);
     }
 
     private boolean startMonitoring(Patient patient, Sickness sickness) {

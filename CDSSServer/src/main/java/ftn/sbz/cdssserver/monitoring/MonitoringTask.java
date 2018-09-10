@@ -7,6 +7,8 @@ import ftn.sbz.cdssserver.model.monitoring.Urination;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 
+import java.util.Date;
+
 
 public class MonitoringTask implements Runnable {
 
@@ -37,6 +39,10 @@ public class MonitoringTask implements Runnable {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+
+            if (new Date().getTime() % 3 == 0) {
+                changeOxygenLevel(50);
             }
         }
         System.out.printf("Patient %s released from monitoring.\n", patient.getPatient().getName());

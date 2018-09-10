@@ -12,4 +12,7 @@ public interface MonitoringService {
     boolean putPatientToIntensiveCare(Patient patient, Sickness sickness);
 
     boolean releasePatientFromIntensiveCare(long medicalCardNumber);
+
+    // called from rules!
+    void sendMessage(String message);
 }

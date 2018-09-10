@@ -33,7 +33,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendMessage(String message, String level) {
         String dateString = new SimpleDateFormat("HH:mm:ss").format(new Date());
         System.out.println("sending message " + message);
-        this.template.convertAndSend("/chat",
+        this.template.convertAndSend("/monitoring",
                 new AlarmNotification(dateString, message, level));
     }
 }
