@@ -54,7 +54,7 @@ public class RuleServiceImpl implements RuleService {
         sicknesses.forEach(kieSession::insert);
     }
 
-    @Override // F F F F F List<PossibleAllergies>
+    @Override
     public PossibleAllergies checkAllergies(long id, List<Medicine> medicines) {
         final Patient patient = patientService.findById(id);
         if (patient == null)
@@ -67,14 +67,6 @@ public class RuleServiceImpl implements RuleService {
             medicine.getIngredients().forEach(kieSession::insert);
         });
 
-        // F F F F F F F F F F F F F F F F F F F F F
-//        kieSession.getAgenda().getAgendaGroup("allergies").setFocus();
-//        kieSession.fireAllRules();
-//
-//        final Collection<?> allergies = kieSession.getObjects(new ClassObjectFilter(PossibleAllergies.class));
-//
-//        // F F F F F    kod nje ide "return allergies", jer joj ova metoda vraca --> List<PossibleAllergies>
-//        return allergies.stream().map(a -> (PossibleAllergies) a).collect(Collectors.toList());
         QueryResultsRow result = kieSession.getQueryResults("checkAllergies", patient).iterator().next();
 
         return new PossibleAllergies(

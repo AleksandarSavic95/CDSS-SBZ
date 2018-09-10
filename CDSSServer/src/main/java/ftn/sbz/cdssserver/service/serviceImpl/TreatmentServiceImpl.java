@@ -3,6 +3,7 @@ package ftn.sbz.cdssserver.service.serviceImpl;
 import ftn.sbz.cdssserver.model.Doctor;
 import ftn.sbz.cdssserver.model.Patient;
 import ftn.sbz.cdssserver.model.Treatment;
+import ftn.sbz.cdssserver.repository.PatientRepository;
 import ftn.sbz.cdssserver.repository.TreatmentRepository;
 import ftn.sbz.cdssserver.repository.UserRepository;
 import ftn.sbz.cdssserver.service.TreatmentService;
@@ -19,11 +20,13 @@ public class TreatmentServiceImpl implements TreatmentService {
 
     private final TreatmentRepository treatmentRepository;
     private final UserRepository userRepository;
+    private final PatientRepository patientRepository;
 
     @Autowired
-    public TreatmentServiceImpl(TreatmentRepository treatmentRepository, UserRepository userRepository) {
+    public TreatmentServiceImpl(TreatmentRepository treatmentRepository, UserRepository userRepository, PatientRepository patientRepository) {
         this.treatmentRepository = treatmentRepository;
         this.userRepository = userRepository;
+        this.patientRepository = patientRepository;
     }
 
     public List<Treatment> findAll() {
@@ -49,6 +52,13 @@ public class TreatmentServiceImpl implements TreatmentService {
                 treatment.getDoctor().getUsername(),
                 treatment.getSickness().getName(),
                 treatment.getMedicines().stream().filter(medicine -> medicine.getType().name().equals("ANALGETIC")).count());
+
+        // add sickness to patient
+        Patient patient = patientRepository.findById(treatment.getPatient().getId());
+        patient.getSickFrom().add(treatment.getSickness());
+        patient = patientRepository.save(patient);
+        treatment.setPatient(patient);
+
         return treatmentRepository.save(treatment);
     }
 

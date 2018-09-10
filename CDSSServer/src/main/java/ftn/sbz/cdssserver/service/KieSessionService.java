@@ -15,12 +15,10 @@ public class KieSessionService {
         sessionMap = new HashMap<>(); // TODO: move to constructor?
     }
 
-    // PUT static !!!! F F F F F F F F F F F F F F F F F F F
     public KieSession getSession(String username) {
         return sessionMap.get(username);
     }
 
-    // PUT static !!!! F F F F F F F F F F F F F F F F F F F
     public void createSession(String username, KieContainer kieContainer) {
         // destroy old session
         if (sessionMap.containsKey(username))

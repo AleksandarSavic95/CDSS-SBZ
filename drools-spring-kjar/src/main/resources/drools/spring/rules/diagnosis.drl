@@ -44,8 +44,7 @@ rule "diagnosis of Group 1 sicknesses"
 salience 50
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect (Symptom() over window:time(3s)) // A A A A
-        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
+        $symptoms: List() from collect (Symptom() over window:time(3s))
 
         $s: Sickness($gen: generalSymptoms, sicknessGroup == 1)
         List($numGen: size, size >= 4) from collect (
@@ -63,8 +62,7 @@ rule "diagnosis of Group 2 sicknesses"
 salience 40
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect (Symptom() over window:time(3s)) // A A A A
-        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
+        $symptoms: List() from collect (Symptom() over window:time(3s))
         $s: Sickness(sicknessGroup == 2, $gen: generalSymptoms)
         List(size == $gen.size) from collect (
             Symptom(this memberOf $symptoms) from $gen
@@ -80,8 +78,7 @@ rule "detect possible illnesses from group 3"
 salience 30
 agenda-group "diagnosis"
     when
-        $symptoms: List() from collect (Symptom() over window:time(3s)) // A A A A
-        // $symptoms: List() from collect (Symptom()) // F F F F F F F F
+        $symptoms: List() from collect (Symptom() over window:time(3s))
         $s: Sickness(sicknessGroup == 3, $gen: generalSymptoms, $spec: specificSymptoms)
         List($numGen: size, size >= 2) from collect (
             Symptom(this memberOf $symptoms) from $gen
@@ -92,12 +89,12 @@ agenda-group "diagnosis"
     then
         int weightSpec = 3; // 1,2,3,4.. // effect of number of specific symptoms in a Group3-Sickness
         double percentage = ($numGen + weightSpec * $numSpec) * 100.0 / ($gen.size() + weightSpec * $spec.size()); // A A A A
-//        double percentage = ($numGen + $numSpec) / ($gen.size() + $spec.size()); // F F F F F F F
         System.out.println("\nInserting " + $s.getName() + " with " + percentage + "%\n");
         insert(new PossibleSickness($s, percentage));
 end
 
-//  T E S T I N G   O N L Y !!!
+
+//  T E S T I N G   O N L Y !!! /////////
 rule "possible sicknesses"
 salience 3
 agenda-group "diagnosis"
@@ -114,8 +111,7 @@ salience 3
 agenda-group "diagnosis"
 when
     Date( $time: time ) from new Date()
-    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(3s)) // A A A A
-    // $possibleSicknesses: List() from collect(PossibleSickness()) // F F F F F F F F F
+    $possibleSicknesses: List() from collect(PossibleSickness() over window:time(3s))
     $sicknesses: List() from collect(Sickness() over window:time(3s))
 then
     System.out.println("\n======= " + $possibleSicknesses.size() + " RECENT possible Sicknesses!!\n");
