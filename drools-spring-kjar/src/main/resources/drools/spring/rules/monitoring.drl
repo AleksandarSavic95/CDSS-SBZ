@@ -12,11 +12,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 global SimpMessagingTemplate messagingTemplate;
 
-/**
-● Problem sa kiseonikom:
-    o Nivo kiseonika u krvi pacijenta je manja od 70 mmHg
-    o U poslednjih 15 minuta nisu zabeleženi događaji rasta nivoa kiseonika.
-**/
 rule "oxygen problems"
 agenda-group "monitoring"
     when
@@ -29,10 +24,6 @@ agenda-group "monitoring"
 //        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
 end
 
-/**
-● Ubrzan srčani ritam:
-    o U poslednjih 10 sekundi zabeleženo više od 25 otkucaja srca
-**/
 rule "heart problems"
 agenda-group "monitoring"
     when
@@ -47,12 +38,6 @@ agenda-group "monitoring"
 end
 
 
-/**
-● Hitno potrebna dijaliza:
-    o Pacijent boluje od hronične bubrežne bolesti
-    o U poslednjih 10 sekundi zabeleženo više od 10 otkucaja srca
-    o Suma količine mokrenja u poslednjih 12 sati je manja od 100ml
-**/
 rule "urgent dialysis"
 agenda-group "monitoring"
     when

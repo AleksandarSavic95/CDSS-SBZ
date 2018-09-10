@@ -153,14 +153,6 @@ public class RuleServiceImpl implements RuleService {
         return true;
     }
 
-    // F F F F F F F F F F F F F F F F F F F   |  ONLY if not using    @Event  +  window:time
-    // clear memory of Symptoms and Diagnosis DTOs for next diagnosis to be valid
-//    private void clearSession() {
-//        for( Object object: kieSession.getObjects() ){
-//            kieSession.delete(kieSession.getFactHandle(object));
-//        } // F F F F F F F F F F F F F F F F F
-//    }
-
     @Override
     public void insertSymptom(String symptomName) {
         Symptom foundSymptom = symptomService.findByName(symptomName);

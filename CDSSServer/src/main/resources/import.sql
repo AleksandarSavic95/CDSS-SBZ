@@ -160,3 +160,4 @@ INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (9, 2);
 INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (10, 2);
 INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (11, 2);
 INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (12, 2);
+INSERT INTO treatment_medicine (treatment_id, medicine_id) VALUES (13, 2);

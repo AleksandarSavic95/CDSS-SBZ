@@ -110,32 +110,6 @@ public class PatientController {
         return new ResponseEntity<>(sicknesses, HttpStatus.OK);
     }
 
-    // F F F F F F F F F F F F F F F F F F F F F F F F F
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/kie")
-//    public ResponseEntity getDoctorSession() {
-//        System.out.println("SecurityUtils.getUsernameOfLoggedUser(): " + SecurityUtils.getUsernameOfLoggedUser());
-//        return new ResponseEntity<>(
-//                KieSessionService.getSession(SecurityUtils.getUsernameOfLoggedUser()).getIdentifier(),
-//                HttpStatus.OK);
-//    }
-
-    // A A A A A A A A A A A A A A A A A A A A
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/ses")
-    public ResponseEntity getUserSession() {
-        return new ResponseEntity<>(
-                kieSession.getIdentifier(),
-                HttpStatus.OK);
-    }
-    // A A A A A A A A A A A A A A A A A A A A
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/rules")
-    public ResponseEntity sessionFromRuleService() {
-        return new ResponseEntity<>(ruleService.getRulesAmount(), HttpStatus.OK);
-    }
-
     @PreAuthorize("hasAuthority('DOCTOR')")
     @PostMapping("/{id}/checkAllergies")
     public ResponseEntity checkAllergies(@PathVariable long id, @RequestBody List<Medicine> medicine) {
@@ -145,11 +119,4 @@ public class PatientController {
         }
         return new ResponseEntity<>(possibleAllergies, HttpStatus.OK);
     }
-//
-//    @PreAuthorize("hasAuthority('DOCTOR')")
-//    @GetMapping("/generateReports")
-//    public ResponseEntity generateReports() {
-//        final PatientReport report = ruleService.generateReports();
-//        return new ResponseEntity<>(report, HttpStatus.OK);
-//    }
 }

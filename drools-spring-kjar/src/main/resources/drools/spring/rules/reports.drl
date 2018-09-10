@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-/**
-● Spisak pacijenata sa mogući hroničnim oboljenjima:
-    o Pacijent je u poslednje dve godine više od 5 puta lečen od iste bolesti
-    o Bolest nije prehlada ili groznica
-**/
+
 query chronicallySickPatients()
     $p: Patient() over window:time(3s)
     $s: Sickness($name: name) over window:time(3s)
@@ -24,12 +20,6 @@ query chronicallySickPatients()
     )
 end
 
-
-/**
-● Spisak mogućih zavisnika:
-    o Pacijentu su u poslednjih 6 meseci barem 6 puta prepisani analgetici od strane 3 ili više različita
-lekara
-**/
 query addicts()
     $p: Patient() over window:time(3s)
     $treatments: List(size >= 6) from collect (
@@ -43,13 +33,7 @@ query addicts()
         result(doctorsSet)
     )
 end
-/**
-● Spisak pacijenta sa oslabljenim imunitetom:
-    o Pacijent je lečen više od 10 puta u poslednjih 12 meseci od barem 2 različite bolesti za koje su mu
-prepisani antibiotici
-    o Pacijent u poslednjih 12 meseci nije bolovao od bolesti za koju mu nisu bili prepisani antibiotici
-    ooo TJ prepisani su mu antibiotici za sve bolesti od kojih je bolovao u posljednjih 12 mjeseci
-**/
+
 query weakImmunityPatients()
     $p: Patient() over window:time(3s)
     $antibioticsTreatments: List(size > 10) from collect (
