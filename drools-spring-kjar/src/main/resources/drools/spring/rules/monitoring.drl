@@ -10,7 +10,6 @@ import ftn.sbz.cdssserver.model.monitoring.Urination;
 import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-//global SimpMessagingTemplate messagingTemplate;
 global MonitoringService monitoringService;
 
 rule "oxygen problems"
