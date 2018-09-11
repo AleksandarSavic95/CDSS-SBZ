@@ -21,8 +21,7 @@ agenda-group "monitoring"
     then
         String message = "\nOxy problems for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
-        monitoringService.sendMessage(message);
-//        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
+//        monitoringService.sendMessage(message); // doesn't work in tests
 end
 
 rule "heart problems"
@@ -35,8 +34,7 @@ agenda-group "monitoring"
     then
         String message = "\nHeart problems for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
-        monitoringService.sendMessage(message);
-//        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
+//        monitoringService.sendMessage(message); // doesn't work in tests
 end
 
 
@@ -54,6 +52,5 @@ agenda-group "monitoring"
     then
         String message = "\nUrgent dialysis for " + $monitoringPatient.getPatient().getName();
         System.out.println(message);
-        monitoringService.sendMessage(message);
-//        messagingTemplate.convertAndSend("/monitoring", message); // doesn't work in tests
+//        monitoringService.sendMessage(message); // doesn't work in tests
 end

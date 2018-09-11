@@ -5,6 +5,7 @@ import ftn.sbz.cdssserver.model.monitoring.MonitoringPatient;
 import ftn.sbz.cdssserver.model.monitoring.OxygenLevel;
 import ftn.sbz.cdssserver.model.sickness.Sickness;
 import ftn.sbz.cdssserver.monitoring.MonitoringTask;
+import ftn.sbz.cdssserver.sockets.WebSocketConfig;
 import org.drools.core.time.SessionPseudoClock;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.config.authentication.CachingUserDetailsService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -23,8 +25,11 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@WebAppConfiguration
+//@WebAppConfiguration
 @ContextConfiguration
+// COMMENT MESSAGE SENDING LINE WHILE TESTING  AND  REFRESH RULES!
+// COMMENT MESSAGE SENDING LINE WHILE TESTING  AND  REFRESH RULES!
+// COMMENT MESSAGE SENDING LINE WHILE TESTING  AND  REFRESH RULES!
 public class CdssserverApplicationTests {
 	private static final String GROUP_ID = "ftn.sbz";
 	private static final String ARTIFACT_ID = "drools-spring-kjar";
